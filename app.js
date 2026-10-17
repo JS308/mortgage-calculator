@@ -1285,9 +1285,8 @@ function showPlans(principal, plans, rows) {
   viewPlans = plans;
   exportRows = rows || [];
   exportDefaultIds = bestExportPlanIds(exportRows, plans);
-  if (!viewPlans.some((plan) => plan.id === activePlanId)) {
-    activePlanId = viewPlans.length > 1 ? viewPlans[1].id : "original";
-  }
+  const bestId = exportDefaultIds.values().next().value;
+  activePlanId = bestId && viewPlans.some((plan) => plan.id === bestId) ? bestId : "original";
   renderChart(roundMoney(principal));
   renderPlanSwitch();
   renderExportOptions();
