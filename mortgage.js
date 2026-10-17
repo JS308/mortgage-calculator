@@ -168,6 +168,29 @@ function amortize(method) {
   return { base: calcEqualInstallment, reduce: calcReducedPayment };
 }
 
+function mergeComboParts(fundSchedule, commercialSchedule) {
+  const length = Math.max(fundSchedule.length, commercialSchedule.length);
+  const schedule = [];
+  for (let index = 0; index < length; index++) {
+    const fund = fundSchedule[index];
+    const commercial = commercialSchedule[index];
+    schedule.push({
+      月份: index + 1,
+      月供: roundMoney((fund ? fund.月供 : 0) + (commercial ? commercial.月供 : 0)),
+      本金部分: roundMoney((fund ? fund.本金部分 : 0) + (commercial ? commercial.本金部分 : 0)),
+      利息部分: roundMoney((fund ? fund.利息部分 : 0) + (commercial ? commercial.利息部分 : 0)),
+      剩余本金: roundMoney((fund ? fund.剩余本金 : 0) + (commercial ? commercial.剩余本金 : 0)),
+      公积金月供: fund ? fund.月供 : 0,
+      公积金本金: fund ? fund.本金部分 : 0,
+      公积金利息: fund ? fund.利息部分 : 0,
+      商贷月供: commercial ? commercial.月供 : 0,
+      商贷本金: commercial ? commercial.本金部分 : 0,
+      商贷利息: commercial ? commercial.利息部分 : 0,
+    });
+  }
+  return schedule;
+}
+
 function mergeSchedules(parts) {
   const length = parts.reduce((max, schedule) => Math.max(max, schedule.length), 0);
   const schedule = [];
@@ -505,7 +528,7 @@ function calcComboRefinance(fundPrincipal, fundRate, fundYears, commercialPrinci
     手续费: cost,
     期数: commercial.length,
     组合: true,
-    计划: mergeSchedules([fund, refinanced]),
+    计划: mergeComboParts(fund, refinanced),
   };
 }
 
@@ -661,6 +684,12 @@ function runComboSchedule(fundPrincipal, fundRate, fundYears, commercialPrincipa
       本金部分: roundMoney(fund.principal + commercial.principal),
       利息部分: roundMoney(fund.interest + commercial.interest),
       剩余本金: roundMoney(fundBalance + commercialBalance),
+      公积金月供: fund.payment,
+      公积金本金: fund.principal,
+      公积金利息: fund.interest,
+      商贷月供: commercial.payment,
+      商贷本金: commercial.principal,
+      商贷利息: commercial.interest,
     });
   }
 
