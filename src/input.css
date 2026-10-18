@@ -306,6 +306,25 @@ input.field-missing {
   border-radius: 0.75rem;
 }
 
+.image-save-hint {
+  margin: 0;
+  padding: 0.85rem 1rem;
+  border-radius: 0.75rem;
+  background: #fffbeb;
+  color: #78350f;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+#result {
+  scroll-margin-top: 0.75rem;
+}
+
+.calc-page {
+  padding-bottom: 50vh;
+}
+
 #schedule-table.schedule-combo {
   min-width: 58rem;
 }

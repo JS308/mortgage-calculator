@@ -311,10 +311,12 @@ form.addEventListener("submit", (event) => {
         schedule: plan.schedule,
       })),
     };
+    result.scrollIntoView({ behavior: "smooth", block: "start" });
   } catch (error) {
     message.textContent = error.message;
     latestReport = null;
     clearVisualization();
+    message.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }
 });
 
