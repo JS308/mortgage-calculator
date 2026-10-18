@@ -1538,17 +1538,22 @@ function renderKneeNote() {
   let tone;
   if (paidMonthsShown < first) {
     tone = "is-good";
-    text = "💡 当前处于最佳还款期，提前还贷性价比极高。" + times;
+    text = "💡 当前处于最佳还款期，提前还贷性价比极高。";
   } else if (second && paidMonthsShown < second) {
     tone = "is-warn";
-    text = "⚠️ 已过还款性价比拐点，提前还款省息开始下降。" + times;
+    text = "⚠️ 已过还款性价比拐点，提前还款省息开始下降。";
   } else {
     tone = "is-warn";
-    text = "⚠️ 当前已过最佳还款期，剩余月供中大部分是本金，提前还款省的利息有限，建议综合评估理财收益。" + times;
+    text = "⚠️ 当前已过最佳还款期，剩余月供中大部分是本金，提前还款省的利息有限，建议综合评估理财收益。";
   }
   note.hidden = false;
   note.className = "knee-note " + tone;
-  note.textContent = text;
+  note.replaceChildren();
+  const headline = document.createElement("strong");
+  headline.textContent = text;
+  const detail = document.createElement("span");
+  detail.textContent = times;
+  note.append(headline, detail);
 }
 
 const interestKneePlugin = {
@@ -2288,6 +2293,7 @@ async function createImageReport() {
   const comparison = document.getElementById("comparison");
   if (comparison && !comparison.hidden) sheet.appendChild(comparison.cloneNode(true));
   sheet.appendChild(imageChartSection());
+  sheet.appendChild(imageFooter());
   stripIds(sheet);
   host.appendChild(sheet);
   document.body.appendChild(host);
@@ -2322,15 +2328,26 @@ function imageChartSection() {
     image.alt = title;
     image.src = renderStaticChart(kind, start, false);
     card.append(heading, image);
-    if (kind === "interest" && knee && !knee.hidden && knee.textContent) {
-      const note = document.createElement("p");
-      note.className = "image-chart-note" + (knee.classList.contains("is-warn") ? " is-warn" : " is-good");
-      note.textContent = knee.textContent;
+    if (kind === "interest" && knee && !knee.hidden && knee.childElementCount) {
+      const note = knee.cloneNode(true);
+      note.removeAttribute("id");
+      note.hidden = false;
+      note.classList.add("image-chart-note");
       card.append(note);
     }
     section.append(card);
   });
   return section;
+}
+
+function imageFooter() {
+  const foot = document.createElement("p");
+  foot.className = "image-foot";
+  foot.append("想要计算你自己的房贷？访问免费工具：");
+  const site = document.createElement("strong");
+  site.textContent = "tqhuan.cn";
+  foot.append(site, "（纯本地计算，不收集隐私）");
+  return foot;
 }
 
 function showImageReport(canvas, fileName) {

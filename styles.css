@@ -229,6 +229,37 @@ input.field-missing {
   color: #92400e;
 }
 
+.image-chart-note strong,
+.knee-note strong {
+  display: block;
+  font-weight: 700;
+}
+
+.image-chart-note span,
+.knee-note span {
+  display: block;
+  margin-top: 2px;
+  font-weight: 400;
+}
+
+.image-foot {
+  margin: 0;
+  padding: 14px 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #f8fafc;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.image-foot strong {
+  color: #0f172a;
+  font-size: 16px;
+  font-weight: 700;
+}
+
 #image-report {
   width: min(100% - 1.5rem, 28rem);
   max-height: calc(100% - 2rem);
