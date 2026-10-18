@@ -31,6 +31,14 @@ details[open] > summary::after {
   transform: rotate(180deg);
 }
 
+#paid-details > summary {
+  align-items: flex-start;
+}
+
+#paid-details > summary span {
+  min-width: 0;
+}
+
 .fold-hint {
   margin-left: auto;
   font-size: 0.75rem;

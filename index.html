@@ -101,19 +101,24 @@
         <input id="years" name="years" type="text" inputmode="numeric" placeholder="例如 30" autocomplete="off" required class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-base text-slate-900 outline-none ring-slate-900 focus:ring-2">
       </label>
 
-      <div class="grid grid-cols-2 gap-3">
-        <div>
-          <label class="block text-sm font-medium text-slate-700">
-            已还款期数
-            <input id="paid-months" name="paid-months" type="text" inputmode="numeric" placeholder="0" autocomplete="off" class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-base text-slate-900 outline-none ring-slate-900 focus:ring-2">
-          </label>
-          <button type="button" id="open-paid-helper" class="paid-helper-link">不知道期数？点这里按时间算</button>
+      <details id="paid-details" class="border-t border-slate-200 pt-4">
+        <summary class="text-sm font-medium leading-relaxed text-slate-700">
+          <span>选填：如果你已经开始还房贷了，点这里（填了算得更准） 👇</span>
+        </summary>
+        <div class="mt-3 grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-sm font-medium text-slate-700">
+              已还款期数
+              <input id="paid-months" name="paid-months" type="text" inputmode="numeric" placeholder="0" autocomplete="off" class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-base text-slate-900 outline-none ring-slate-900 focus:ring-2">
+            </label>
+            <button type="button" id="open-paid-helper" class="paid-helper-link">不知道期数？点这里按时间算</button>
+          </div>
+          <div>
+            <p class="text-sm font-medium text-slate-700">剩余还款期数</p>
+            <p id="remaining-months" class="mt-1.5 whitespace-pre-line rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 text-sm leading-relaxed text-slate-900">填写年限后显示</p>
+          </div>
         </div>
-        <div>
-          <p class="text-sm font-medium text-slate-700">剩余还款期数</p>
-          <p id="remaining-months" class="mt-1.5 whitespace-pre-line rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 text-sm leading-relaxed text-slate-900">填写年限后显示</p>
-        </div>
-      </div>
+      </details>
 
       <label id="single-prepay" class="block text-sm font-medium text-slate-700">
         提前还款金额（万元，可选）
