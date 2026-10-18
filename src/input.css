@@ -732,3 +732,17 @@ input.field-missing {
   font-size: 10px;
   line-height: 1.4;
 }
+
+.knee-note {
+  margin: 0.5rem 0 0;
+  font-size: 0.875rem;
+  line-height: 1.55;
+}
+
+.knee-note.is-good {
+  color: #065f46;
+}
+
+.knee-note.is-warn {
+  color: #92400e;
+}

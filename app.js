@@ -20,6 +20,8 @@ let exportDefaultIds = new Set();
 let activePlanId = "original";
 let balanceChart = null;
 let interestChart = null;
+let chartContractMonths = 0;
+let chartKneeMonth = null;
 let chartToken = 0;
 let latestReport = null;
 
@@ -252,6 +254,9 @@ form.addEventListener("submit", (event) => {
     renderComparison(comparisonRows, advice);
     result.hidden = false;
     const startingBalance = roundMoney(original[0].剩余本金 + original[0].本金部分);
+    chartContractMonths = years * 12;
+    chartKneeMonth = payoffKneeMonth(chartContractMonths, repayMethod);
+    renderKneeNote();
     showPlans(startingBalance, chartPlans({
       original,
       shortened,
@@ -1358,12 +1363,20 @@ function showPlans(principal, plans, rows) {
 function clearVisualization() {
   viewPlans = [];
   chartToken += 1;
+  chartContractMonths = 0;
+  chartKneeMonth = null;
   paidMonthsShown = 0;
   paidHistory = [];
   scheduleBody.replaceChildren();
   planSwitch.replaceChildren();
   document.getElementById("export-plan-options").replaceChildren();
   document.getElementById("schedule-paid-note").textContent = "";
+  const kneeNote = document.getElementById("interest-knee-note");
+  if (kneeNote) {
+    kneeNote.textContent = "";
+    kneeNote.hidden = true;
+    kneeNote.className = "";
+  }
   document.getElementById("interest-progress-wrap").hidden = true;
   chartNote.textContent = "";
   interestChartNote.textContent = "";
@@ -1474,6 +1487,69 @@ function interestChartPoints(plan) {
   return points;
 }
 
+function payoffKneeMonth(totalMonths, method) {
+  const fraction = method === "principal" ? 0.25 : 1 / 3;
+  return Math.max(1, Math.round(totalMonths * fraction));
+}
+
+function renderKneeNote() {
+  const note = document.getElementById("interest-knee-note");
+  if (!note) return;
+  if (!chartContractMonths) {
+    note.textContent = "";
+    note.hidden = true;
+    note.className = "";
+    return;
+  }
+  const past = paidMonthsShown >= chartKneeMonth;
+  note.hidden = false;
+  note.className = past ? "knee-note is-warn" : "knee-note is-good";
+  note.textContent = past
+    ? "⚠️ 当前已过最佳还款期，剩余月供中大部分是本金，提前还款省的利息有限，建议综合评估理财收益。"
+    : "💡 当前处于最佳还款期，提前还贷性价比极高。";
+}
+
+const interestKneePlugin = {
+  id: "interestKnee",
+  afterDatasetsDraw(chart) {
+    if (chartKneeMonth == null) return;
+    const xScale = chart.scales.x;
+    const yScale = chart.scales.y;
+    if (!xScale || !yScale) return;
+    const x = xScale.getPixelForValue(chartKneeMonth);
+    if (x < xScale.left || x > xScale.right) return;
+    const ctx = chart.ctx;
+    const area = chart.chartArea;
+    ctx.save();
+    ctx.beginPath();
+    ctx.setLineDash([4, 4]);
+    ctx.strokeStyle = "#b45309";
+    ctx.lineWidth = 1.5;
+    ctx.moveTo(x, area.top);
+    ctx.lineTo(x, area.bottom);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    const lines = ["还款性价比拐点", "此后提前还款省息锐减"];
+    const fontSize = chart.width < 420 ? 11 : 12;
+    ctx.font = fontSize + "px " + (Chart.defaults.font.family || "sans-serif");
+    const lineHeight = fontSize + 3;
+    const blockWidth = Math.max.apply(null, lines.map((line) => ctx.measureText(line).width));
+    const pad = 4;
+    let textX = x + 8;
+    if (textX + blockWidth > area.right - 2) textX = Math.max(area.left + 2, x - 8 - blockWidth);
+    const boxY = area.top + 6;
+    ctx.fillStyle = "rgba(255, 251, 235, 0.94)";
+    ctx.fillRect(textX - pad, boxY, blockWidth + pad * 2, lineHeight * lines.length + pad);
+    ctx.fillStyle = "#92400e";
+    ctx.textAlign = "left";
+    ctx.textBaseline = "top";
+    lines.forEach((line, index) => {
+      ctx.fillText(line, textX, boxY + pad / 2 + index * lineHeight);
+    });
+    ctx.restore();
+  },
+};
+
 function wanTick(value) {
   if (Math.abs(value) >= 10000) {
     const wan = value / 10000;
@@ -1563,6 +1639,7 @@ async function renderChart(startingBalance) {
       datasets: lineDatasets((plan) => interestChartPoints(plan)),
     },
     options: lineChartOptions(false),
+    plugins: [interestKneePlugin],
   });
 }
 
@@ -1581,6 +1658,7 @@ function renderStaticChart(kind, startingBalance, compact) {
     type: "line",
     data: { datasets },
     options: lineChartOptions(true, compact),
+    plugins: kind === "interest" ? [interestKneePlugin] : [],
   });
   const url = canvas.toDataURL("image/png");
   chart.destroy();
