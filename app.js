@@ -63,6 +63,7 @@ bindAmountInput(document.getElementById("commercial-principal"));
 bindAmountInput(document.getElementById("combo-prepay"));
 bindAmountInput(document.getElementById("prepay"));
 bindAmountInput(document.getElementById("annual-amount"));
+fillAnnualSelects();
 bindAmountInput(document.getElementById("remaining-principal"));
 
 document.getElementById("open-paid-helper").addEventListener("click", () => {
@@ -905,32 +906,64 @@ function readExtras(years, paid) {
   return extras.concat(readAnnualExtras(totalMonths, elapsed));
 }
 
+function fillAnnualSelects() {
+  const yearSelect = document.getElementById("annual-start-year");
+  const monthSelect = document.getElementById("annual-start-month");
+  const now = new Date();
+  const startYear = now.getFullYear();
+  for (let year = startYear; year <= startYear + 35; year += 1) {
+    const option = document.createElement("option");
+    option.value = String(year);
+    option.textContent = year + "年";
+    yearSelect.appendChild(option);
+  }
+  for (let month = 1; month <= 12; month += 1) {
+    const option = document.createElement("option");
+    option.value = String(month);
+    option.textContent = month + "月";
+    monthSelect.appendChild(option);
+  }
+  yearSelect.value = String(startYear);
+  monthSelect.value = "12";
+}
+
+function loanStartForPaid(paid) {
+  const explicit = readLoanStart();
+  if (explicit) return explicit;
+  const now = new Date();
+  const index = now.getFullYear() * 12 + now.getMonth() - (paid || 0);
+  return { year: Math.floor(index / 12), month: index % 12 + 1 };
+}
+
+function absolutePeriod(year, month, paid) {
+  const start = loanStartForPaid(paid);
+  return (year * 12 + (month - 1)) - (start.year * 12 + (start.month - 1)) + 1;
+}
+
 function readAnnualExtras(totalMonths, paid) {
   const amountRaw = document.getElementById("annual-amount").value.trim();
-  const yearRaw = document.getElementById("annual-start-year").value.trim();
-  if (amountRaw === "" && yearRaw === "") return [];
-  if (amountRaw === "" || yearRaw === "") {
-    throw new Error("每年额外还一笔需要同时填写金额和起始年份");
-  }
+  if (amountRaw === "") return [];
   const amount = wanToYuan(Number(amountRaw.replace(/,/g, "")));
-  const startYear = Number(yearRaw);
+  const startYear = Number(document.getElementById("annual-start-year").value);
+  const startMonth = Number(document.getElementById("annual-start-month").value);
   if (!Number.isFinite(amount) || roundMoney(amount) <= 0) {
     throw new Error("每年还多少必须是大于 0 的数字");
   }
   if (!Number.isInteger(startYear) || startYear < 1990 || startYear > 2100) {
-    throw new Error("起始年份要在 1990 到 2100 之间");
+    throw new Error("请选择每年还款的起始年份");
   }
-  const now = new Date();
+  if (!Number.isInteger(startMonth) || startMonth < 1 || startMonth > 12) {
+    throw new Error("请选择每年还款的月份");
+  }
   const elapsed = paid || 0;
   const extras = [];
   for (let year = startYear; year <= startYear + 40; year += 1) {
-    const decemberOffset = (year - now.getFullYear()) * 12 + (12 - (now.getMonth() + 1));
-    const period = elapsed + 1 + decemberOffset;
+    const period = absolutePeriod(year, startMonth, elapsed);
     if (period > totalMonths) break;
     if (period <= elapsed) continue;
     extras.push({ 月份: period - elapsed, 金额: amount });
   }
-  if (!extras.length) throw new Error("从起始年份起，没有还能再还的 12 月");
+  if (!extras.length) throw new Error("从所选年月起，没有还能再还的期数");
   return extras;
 }
 

@@ -130,15 +130,21 @@
           <p class="text-sm leading-relaxed text-slate-500">填写要还款的期数。这笔钱在该期月供之外直接冲抵本金。</p>
           <div class="space-y-3 rounded-xl border border-slate-200 p-4">
             <p class="text-sm font-semibold">每年额外还一笔</p>
-            <p class="text-sm leading-relaxed text-slate-500">适合年终奖。从起始年份起，每年 12 月自动还一笔，不用逐条添加。</p>
+            <p class="text-sm leading-relaxed text-slate-500">从所选年份的这个月起，每年同一月份自动还一笔。已经过去的月份会跳过。</p>
             <label class="block text-sm font-medium text-slate-700">
               每年还多少（万元）
               <input id="annual-amount" name="annual-amount" type="text" inputmode="decimal" placeholder="例如 5" autocomplete="off" class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-base text-slate-900 outline-none ring-slate-900 focus:ring-2">
             </label>
-            <label class="block text-sm font-medium text-slate-700">
-              从哪一年开始
-              <input id="annual-start-year" name="annual-start-year" type="text" inputmode="numeric" placeholder="例如 2026" autocomplete="off" class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-base text-slate-900 outline-none ring-slate-900 focus:ring-2">
-            </label>
+            <div class="grid grid-cols-2 gap-3">
+              <label class="block text-sm font-medium text-slate-700">
+                从哪一年开始
+                <select id="annual-start-year" name="annual-start-year" class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-base text-slate-900 outline-none ring-slate-900 focus:ring-2"></select>
+              </label>
+              <label class="block text-sm font-medium text-slate-700">
+                每年几月还
+                <select id="annual-start-month" name="annual-start-month" class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-base text-slate-900 outline-none ring-slate-900 focus:ring-2"></select>
+              </label>
+            </div>
           </div>
           <div id="extra-list" class="space-y-3"></div>
           <button type="button" id="add-extra" class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-800 active:bg-slate-100">添加一条分批还款</button>
