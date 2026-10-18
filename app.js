@@ -1510,16 +1510,16 @@ function appendBestKnee(advice) {
     : "最优拐点在" + when + "，该时点前还款更有性价比。";
 }
 
-function kneeYearPhrase(month) {
-  const years = Math.floor(month / 12);
-  const months = month % 12;
-  if (months === 0) return "第" + years + "年";
-  if (years === 0) return "第" + months + "个月";
-  return "第" + years + "年" + months + "个月";
+function periodDateText(period) {
+  const start = readLoanStart() || inferredLoanStart();
+  const index = start.year * 12 + (start.month - 1) + (Number(period) - 1);
+  const year = Math.floor(index / 12);
+  const month = index % 12 + 1;
+  return year + "年" + month + "月";
 }
 
 function kneeWhen(month) {
-  return kneeYearPhrase(month) + "（第" + month + "期）";
+  return periodDateText(month);
 }
 
 function renderKneeNote() {
@@ -1576,7 +1576,7 @@ const interestKneePlugin = {
       ctx.lineTo(x, area.bottom);
       ctx.stroke();
       ctx.setLineDash([]);
-      const lines = [item.title, "（" + kneeYearPhrase(item.month) + " / 第" + item.month + "期）"];
+      const lines = [item.title, periodDateText(item.month)];
       const fontSize = chart.width < 420 ? 11 : 12;
       ctx.font = fontSize + "px " + (Chart.defaults.font.family || "sans-serif");
       const lineHeight = fontSize + 3;
