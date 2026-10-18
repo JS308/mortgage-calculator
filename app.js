@@ -64,6 +64,7 @@ bindAmountInput(document.getElementById("combo-prepay"));
 bindAmountInput(document.getElementById("prepay"));
 bindAmountInput(document.getElementById("annual-amount"));
 fillAnnualSelects();
+fillStartSelects();
 bindAmountInput(document.getElementById("remaining-principal"));
 
 document.getElementById("open-paid-helper").addEventListener("click", () => {
@@ -519,8 +520,8 @@ function scheduleIsCombo(plan) {
 }
 
 function readLoanStart() {
-  const year = Number(document.getElementById("start-year").value.trim());
-  const month = Number(document.getElementById("start-month").value.trim());
+  const year = Number(document.getElementById("start-year").value);
+  const month = Number(document.getElementById("start-month").value);
   if (!Number.isInteger(year) || year < 1990 || year > 2100) return null;
   if (!Number.isInteger(month) || month < 1 || month > 12) return null;
   return { year, month };
@@ -695,11 +696,11 @@ function closestElapsed(series, target) {
 
 function fillPaidByDate() {
   try {
-    const year = Number(document.getElementById("start-year").value.trim());
-    const month = Number(document.getElementById("start-month").value.trim());
-    if (!Number.isInteger(year) || year < 1990 || year > 2100) throw new Error("发放年份要在 1990 到 2100 之间");
-    if (!Number.isInteger(month) || month < 1 || month > 12) throw new Error("发放月份要在 1 到 12 之间");
+    const year = Number(document.getElementById("start-year").value);
+    const month = Number(document.getElementById("start-month").value);
     const now = new Date();
+    if (!Number.isInteger(year) || year < 1990 || year > now.getFullYear()) throw new Error("请选择发放年份");
+    if (!Number.isInteger(month) || month < 1 || month > 12) throw new Error("请选择发放月份");
     const paid = (now.getFullYear() - year) * 12 + (now.getMonth() + 1 - month);
     if (paid < 0) throw new Error("发放时间不能晚于本月");
     const total = loanBalanceSeries().totalMonths;
@@ -904,6 +905,32 @@ function readExtras(years, paid) {
     });
   });
   return extras.concat(readAnnualExtras(totalMonths, elapsed));
+}
+
+function fillStartSelects() {
+  const yearSelect = document.getElementById("start-year");
+  const monthSelect = document.getElementById("start-month");
+  const nowYear = new Date().getFullYear();
+  const yearPlaceholder = document.createElement("option");
+  yearPlaceholder.value = "";
+  yearPlaceholder.textContent = "请选择";
+  yearSelect.appendChild(yearPlaceholder);
+  for (let year = nowYear; year >= 1990; year -= 1) {
+    const option = document.createElement("option");
+    option.value = String(year);
+    option.textContent = year + "年";
+    yearSelect.appendChild(option);
+  }
+  const monthPlaceholder = document.createElement("option");
+  monthPlaceholder.value = "";
+  monthPlaceholder.textContent = "请选择";
+  monthSelect.appendChild(monthPlaceholder);
+  for (let month = 1; month <= 12; month += 1) {
+    const option = document.createElement("option");
+    option.value = String(month);
+    option.textContent = month + "月";
+    monthSelect.appendChild(option);
+  }
 }
 
 function fillAnnualSelects() {
