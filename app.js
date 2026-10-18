@@ -1428,15 +1428,19 @@ function remainingInterestSeries(schedule) {
 }
 
 function lineDatasets(valuesForPlan) {
-  return viewPlans.map((plan) => ({
-    label: plan.name,
-    data: valuesForPlan(plan),
-    borderColor: plan.color,
-    backgroundColor: plan.color,
-    borderWidth: 2,
-    pointRadius: 0,
-    tension: 0,
-  }));
+  return viewPlans.map((plan) => {
+    const shown = plan.id === "original" || plan.id === activePlanId;
+    return {
+      label: plan.name,
+      data: valuesForPlan(plan),
+      borderColor: plan.color,
+      backgroundColor: plan.color,
+      borderWidth: shown ? 2.5 : 1.5,
+      pointRadius: 0,
+      tension: 0,
+      hidden: !shown,
+    };
+  });
 }
 
 function openingChartBalance(fallback) {
@@ -1506,8 +1510,16 @@ function appendBestKnee(advice) {
     : "最优拐点在" + when + "，该时点前还款更有性价比。";
 }
 
+function kneeYearPhrase(month) {
+  const years = Math.floor(month / 12);
+  const months = month % 12;
+  if (months === 0) return "第" + years + "年";
+  if (years === 0) return "第" + months + "个月";
+  return "第" + years + "年" + months + "个月";
+}
+
 function kneeWhen(month) {
-  return "第" + month + "期（" + periodYearMonth(month) + "）";
+  return kneeYearPhrase(month) + "（第" + month + "期）";
 }
 
 function renderKneeNote() {
@@ -1549,7 +1561,7 @@ const interestKneePlugin = {
     const ctx = chart.ctx;
     const area = chart.chartArea;
     const marks = [
-      { month: chartKneeMonths[0], color: "#b45309", fill: "rgba(255, 251, 235, 0.94)", title: "拐点" },
+      { month: chartKneeMonths[0], color: "#b45309", fill: "rgba(255, 251, 235, 0.94)", title: "最佳还款拐点" },
       { month: chartKneeMonths[1], color: "#1d4ed8", fill: "rgba(239, 246, 255, 0.94)", title: "第二拐点" },
     ].filter((item) => item.month);
     ctx.save();
@@ -1564,8 +1576,7 @@ const interestKneePlugin = {
       ctx.lineTo(x, area.bottom);
       ctx.stroke();
       ctx.setLineDash([]);
-      const when = periodYearMonth(item.month);
-      const lines = [item.title + " " + when, "第" + item.month + "期"];
+      const lines = [item.title, "（" + kneeYearPhrase(item.month) + " / 第" + item.month + "期）"];
       const fontSize = chart.width < 420 ? 11 : 12;
       ctx.font = fontSize + "px " + (Chart.defaults.font.family || "sans-serif");
       const lineHeight = fontSize + 3;
