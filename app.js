@@ -2270,8 +2270,12 @@ function stripIds(node) {
 
 async function createImageReport() {
   if (!latestReport) throw new Error("请先计算后再生成图片");
-  await loadScript(HTML2CANVAS_SRC);
+  await Promise.all([
+    loadScript(HTML2CANVAS_SRC),
+    loadScript(CHART_SRC),
+  ]);
   if (typeof html2canvas !== "function") throw new Error("图片组件没有加载完成，请刷新页面后重试。");
+  if (typeof Chart === "undefined") throw new Error("折线图没有加载完成，请刷新页面后重试。");
   const host = document.createElement("div");
   host.className = "image-root";
   const sheet = document.createElement("div");
@@ -2283,10 +2287,13 @@ async function createImageReport() {
   if (payment) sheet.appendChild(payment.cloneNode(true));
   const comparison = document.getElementById("comparison");
   if (comparison && !comparison.hidden) sheet.appendChild(comparison.cloneNode(true));
+  sheet.appendChild(imageChartSection());
   stripIds(sheet);
   host.appendChild(sheet);
   document.body.appendChild(host);
   try {
+    const images = sheet.querySelectorAll("img");
+    await Promise.all(Array.from(images).map((image) => image.decode ? image.decode().catch(() => {}) : Promise.resolve()));
     return await html2canvas(sheet, {
       scale: 2,
       backgroundColor: "#f8fafc",
@@ -2295,6 +2302,35 @@ async function createImageReport() {
   } finally {
     host.remove();
   }
+}
+
+function imageChartSection() {
+  applyChartFont();
+  const section = document.createElement("section");
+  section.className = "image-charts";
+  const start = chartStartingBalance(latestReport);
+  const knee = document.getElementById("interest-knee-note");
+  [
+    ["剩余本金", "balance"],
+    ["剩余利息", "interest"],
+  ].forEach(([title, kind]) => {
+    const card = document.createElement("article");
+    card.className = "image-chart-card";
+    const heading = document.createElement("h2");
+    heading.textContent = title;
+    const image = document.createElement("img");
+    image.alt = title;
+    image.src = renderStaticChart(kind, start, false);
+    card.append(heading, image);
+    if (kind === "interest" && knee && !knee.hidden && knee.textContent) {
+      const note = document.createElement("p");
+      note.className = "image-chart-note" + (knee.classList.contains("is-warn") ? " is-warn" : " is-good");
+      note.textContent = knee.textContent;
+      card.append(note);
+    }
+    section.append(card);
+  });
+  return section;
 }
 
 function showImageReport(canvas, fileName) {

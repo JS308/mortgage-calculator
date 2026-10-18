@@ -299,6 +299,46 @@ input.field-missing {
   margin-top: 16px;
 }
 
+.image-charts {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.image-chart-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: #fff;
+  padding: 16px;
+}
+
+.image-chart-card h2 {
+  margin: 0 0 8px;
+  color: #334155;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.image-chart-card img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.image-chart-note {
+  margin: 8px 0 0;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.image-chart-note.is-good {
+  color: #065f46;
+}
+
+.image-chart-note.is-warn {
+  color: #92400e;
+}
+
 #image-report {
   width: min(100% - 1.5rem, 28rem);
   max-height: calc(100% - 2rem);
