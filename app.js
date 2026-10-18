@@ -21,7 +21,7 @@ let activePlanId = "original";
 let balanceChart = null;
 let interestChart = null;
 let chartContractMonths = 0;
-let chartKneeMonth = null;
+let chartKneeMonths = [];
 let chartToken = 0;
 let latestReport = null;
 
@@ -248,14 +248,17 @@ form.addEventListener("submit", (event) => {
       fundFirst: combo ? combo.优先公积金 : null,
       methodLabel: repayMethod === "principal" ? "等额本金" : "等额本息",
     });
+    const startingBalance = roundMoney(original[0].剩余本金 + original[0].本金部分);
+    chartContractMonths = years * 12;
+    chartKneeMonths = payoffKneeMonths(chartContractMonths, repayMethod);
     const advice = buildAdvice(comparisonRows, {
       depositRate: opportunityInput ? opportunityInput.ratePercent : null,
     });
+    appendBestKnee(advice);
     renderComparison(comparisonRows, advice);
     result.hidden = false;
-    const startingBalance = roundMoney(original[0].剩余本金 + original[0].本金部分);
-    chartContractMonths = years * 12;
-    chartKneeMonth = payoffKneeMonth(chartContractMonths, repayMethod);
+    document.getElementById("chart-details").open = true;
+    document.getElementById("schedule-details").open = true;
     renderKneeNote();
     showPlans(startingBalance, chartPlans({
       original,
@@ -1364,7 +1367,7 @@ function clearVisualization() {
   viewPlans = [];
   chartToken += 1;
   chartContractMonths = 0;
-  chartKneeMonth = null;
+  chartKneeMonths = [];
   paidMonthsShown = 0;
   paidHistory = [];
   scheduleBody.replaceChildren();
@@ -1487,64 +1490,98 @@ function interestChartPoints(plan) {
   return points;
 }
 
-function payoffKneeMonth(totalMonths, method) {
-  const fraction = method === "principal" ? 0.25 : 1 / 3;
-  return Math.max(1, Math.round(totalMonths * fraction));
+function payoffKneeMonths(totalMonths, method) {
+  const firstFraction = method === "principal" ? 0.25 : 1 / 3;
+  const first = Math.min(totalMonths, Math.max(1, Math.round(totalMonths * firstFraction)));
+  let second = Math.min(totalMonths, Math.max(1, Math.round(totalMonths * 0.5)));
+  if (second <= first) second = Math.min(totalMonths, first + 1);
+  return second > first ? [first, second] : [first];
+}
+
+function appendBestKnee(advice) {
+  if (!advice || !advice.text || advice.tone === "warn" || !chartKneeMonths.length) return;
+  const when = kneeWhen(chartKneeMonths[0]);
+  advice.text += paidMonthsShown < chartKneeMonths[0]
+    ? "建议在" + when + "前还款，更有性价比。"
+    : "最优拐点在" + when + "，该时点前还款更有性价比。";
+}
+
+function kneeWhen(month) {
+  return "第" + month + "期（" + periodYearMonth(month) + "）";
 }
 
 function renderKneeNote() {
   const note = document.getElementById("interest-knee-note");
   if (!note) return;
-  if (!chartContractMonths) {
+  if (!chartContractMonths || !chartKneeMonths.length) {
     note.textContent = "";
     note.hidden = true;
     note.className = "";
     return;
   }
-  const past = paidMonthsShown >= chartKneeMonth;
+  const first = chartKneeMonths[0];
+  const second = chartKneeMonths[1];
+  const times = "拐点在" + kneeWhen(first) + (second ? "，第二拐点在" + kneeWhen(second) : "") + "。";
+  let text;
+  let tone;
+  if (paidMonthsShown < first) {
+    tone = "is-good";
+    text = "💡 当前处于最佳还款期，提前还贷性价比极高。" + times;
+  } else if (second && paidMonthsShown < second) {
+    tone = "is-warn";
+    text = "⚠️ 已过还款性价比拐点，提前还款省息开始下降。" + times;
+  } else {
+    tone = "is-warn";
+    text = "⚠️ 当前已过最佳还款期，剩余月供中大部分是本金，提前还款省的利息有限，建议综合评估理财收益。" + times;
+  }
   note.hidden = false;
-  note.className = past ? "knee-note is-warn" : "knee-note is-good";
-  note.textContent = past
-    ? "⚠️ 当前已过最佳还款期，剩余月供中大部分是本金，提前还款省的利息有限，建议综合评估理财收益。"
-    : "💡 当前处于最佳还款期，提前还贷性价比极高。";
+  note.className = "knee-note " + tone;
+  note.textContent = text;
 }
 
 const interestKneePlugin = {
   id: "interestKnee",
   afterDatasetsDraw(chart) {
-    if (chartKneeMonth == null) return;
+    if (!chartKneeMonths.length) return;
     const xScale = chart.scales.x;
     const yScale = chart.scales.y;
     if (!xScale || !yScale) return;
-    const x = xScale.getPixelForValue(chartKneeMonth);
-    if (x < xScale.left || x > xScale.right) return;
     const ctx = chart.ctx;
     const area = chart.chartArea;
+    const marks = [
+      { month: chartKneeMonths[0], color: "#b45309", fill: "rgba(255, 251, 235, 0.94)", title: "拐点" },
+      { month: chartKneeMonths[1], color: "#1d4ed8", fill: "rgba(239, 246, 255, 0.94)", title: "第二拐点" },
+    ].filter((item) => item.month);
     ctx.save();
-    ctx.beginPath();
-    ctx.setLineDash([4, 4]);
-    ctx.strokeStyle = "#b45309";
-    ctx.lineWidth = 1.5;
-    ctx.moveTo(x, area.top);
-    ctx.lineTo(x, area.bottom);
-    ctx.stroke();
-    ctx.setLineDash([]);
-    const lines = ["还款性价比拐点", "此后提前还款省息锐减"];
-    const fontSize = chart.width < 420 ? 11 : 12;
-    ctx.font = fontSize + "px " + (Chart.defaults.font.family || "sans-serif");
-    const lineHeight = fontSize + 3;
-    const blockWidth = Math.max.apply(null, lines.map((line) => ctx.measureText(line).width));
-    const pad = 4;
-    let textX = x + 8;
-    if (textX + blockWidth > area.right - 2) textX = Math.max(area.left + 2, x - 8 - blockWidth);
-    const boxY = area.top + 6;
-    ctx.fillStyle = "rgba(255, 251, 235, 0.94)";
-    ctx.fillRect(textX - pad, boxY, blockWidth + pad * 2, lineHeight * lines.length + pad);
-    ctx.fillStyle = "#92400e";
-    ctx.textAlign = "left";
-    ctx.textBaseline = "top";
-    lines.forEach((line, index) => {
-      ctx.fillText(line, textX, boxY + pad / 2 + index * lineHeight);
+    marks.forEach((item, index) => {
+      const x = xScale.getPixelForValue(item.month);
+      if (x < area.left || x > area.right) return;
+      ctx.beginPath();
+      ctx.setLineDash([4, 4]);
+      ctx.strokeStyle = item.color;
+      ctx.lineWidth = 1.5;
+      ctx.moveTo(x, area.top);
+      ctx.lineTo(x, area.bottom);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      const when = periodYearMonth(item.month);
+      const lines = [item.title + " " + when, "第" + item.month + "期"];
+      const fontSize = chart.width < 420 ? 11 : 12;
+      ctx.font = fontSize + "px " + (Chart.defaults.font.family || "sans-serif");
+      const lineHeight = fontSize + 3;
+      const blockWidth = Math.max.apply(null, lines.map((line) => ctx.measureText(line).width));
+      const pad = 4;
+      let textX = x + 8;
+      if (textX + blockWidth > area.right - 2) textX = Math.max(area.left + 2, x - 8 - blockWidth);
+      const boxY = area.top + 6 + index * (lineHeight * lines.length + pad * 2 + 8);
+      ctx.fillStyle = item.fill;
+      ctx.fillRect(textX - pad, boxY, blockWidth + pad * 2, lineHeight * lines.length + pad);
+      ctx.fillStyle = item.color;
+      ctx.textAlign = "left";
+      ctx.textBaseline = "top";
+      lines.forEach((line, lineIndex) => {
+        ctx.fillText(line, textX, boxY + pad / 2 + lineIndex * lineHeight);
+      });
     });
     ctx.restore();
   },
