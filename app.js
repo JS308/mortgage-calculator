@@ -29,6 +29,22 @@ function linkedMortgagePayment() {
   return latestReport && latestReport.originalPayment > 0 ? latestReport.originalPayment : 0;
 }
 
+function linkedMortgageStress() {
+  const stress = latestReport && latestReport.stress;
+  if (!stress || !(stress.payment > 0) || !(stress.basePayment > 0)) return null;
+  return stress;
+}
+
+function shockedLoanPayment(balance, annualRate, monthsLeft, method, originalPrincipal, originalMonths) {
+  if (!(balance > 0) || !(monthsLeft > 0)) return 0;
+  const shocked = annualRate + 0.03;
+  if (method === "principal") {
+    const part = Math.min(balance, principalInstallment(originalPrincipal, originalMonths));
+    return roundMoney(part + roundMoney(balance * shocked / 12));
+  }
+  return calcMonthlyPayment(balance, shocked / 12, monthsLeft);
+}
+
 planSwitch.addEventListener("click", (event) => {
   const button = event.target.closest("button");
   if (!button || !button.dataset.plan) return;
@@ -254,6 +270,12 @@ form.addEventListener("submit", (event) => {
       methodLabel: repayMethod === "principal" ? "等额本金" : "等额本息",
     });
     const startingBalance = roundMoney(original[0].剩余本金 + original[0].本金部分);
+    const stressPayment = combo && comboInput
+      ? roundMoney(
+        shockedLoanPayment(combo.公积金剩余本金, comboInput.fundRate / 100, Math.max(0, comboInput.fundYears * 12 - paid), repayMethod, comboInput.fund, comboInput.fundYears * 12)
+        + shockedLoanPayment(combo.商贷剩余本金, comboInput.commercialRate / 100, Math.max(0, comboInput.commercialYears * 12 - paid), repayMethod, comboInput.commercial, comboInput.commercialYears * 12)
+      )
+      : shockedLoanPayment(startingBalance, rate, original.length, repayMethod, principal, years * 12);
     chartContractMonths = years * 12;
     chartKneeMonths = payoffKneeMonths(chartContractMonths, repayMethod);
     const advice = buildAdvice(comparisonRows, {
@@ -299,6 +321,7 @@ form.addEventListener("submit", (event) => {
         }
         : null,
       originalPayment,
+      stress: { payment: stressPayment, basePayment: originalPayment },
       originalInterest,
       interestSummary,
       opportunity: opportunity && opportunityInput

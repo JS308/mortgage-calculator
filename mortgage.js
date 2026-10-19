@@ -575,6 +575,8 @@ function calcComboLoan(input) {
     商贷月供: original.commercialNextPayment,
     公积金月数: original.fundMonths,
     商贷月数: original.commercialMonths,
+    公积金剩余本金: original.fundOpenBalance,
+    商贷剩余本金: original.commercialOpenBalance,
     总月供: original.schedule[0].月供,
     总利息: originalInterest,
     公积金总利息: original.fundInterest,
@@ -641,6 +643,8 @@ function runComboSchedule(fundPrincipal, fundRate, fundYears, commercialPrincipa
   let fundInterest = 0;
   let commercialInterest = 0;
   let seenForward = false;
+  const fundOpenBalance = fundBalance;
+  const commercialOpenBalance = commercialBalance;
   const schedule = [];
 
   for (let month = paid + 1; month <= horizon && (fundBalance > 0 || commercialBalance > 0); month++) {
@@ -703,6 +707,8 @@ function runComboSchedule(fundPrincipal, fundRate, fundYears, commercialPrincipa
     commercialInterest,
     fundMonths: fundLoan.months,
     commercialMonths: commercialLoan.months,
+    fundOpenBalance,
+    commercialOpenBalance,
     fundExtra,
     commercialExtra,
     fundEnd,

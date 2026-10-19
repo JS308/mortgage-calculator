@@ -980,3 +980,98 @@ input.field-missing {
     display: none;
   }
 }
+
+.risk-safe-card {
+  border-radius: 1rem;
+  padding: 1rem 1.125rem;
+}
+
+.risk-safe-card.is-over {
+  background: #fff1f2;
+  color: #9f1239;
+}
+
+.risk-safe-card.is-ok {
+  background: #ecfdf5;
+  color: #065f46;
+}
+
+.risk-safe-kicker {
+  font-size: 0.875rem;
+  font-weight: 650;
+}
+
+.risk-safe-line {
+  margin-top: 0.35rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.risk-detail {
+  border-top: 1px solid #f1f5f9;
+  padding-top: 0.75rem;
+}
+
+.risk-detail summary {
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+.risk-detail p {
+  margin-top: 0.5rem;
+  font-size: 0.8125rem;
+  line-height: 1.65;
+  color: #64748b;
+}
+
+.risk-note-danger {
+  color: #9f1239;
+}
+
+.risk-note-watch {
+  color: #92400e;
+}
+
+.risk-benchmark {
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.risk-benchmark.is-danger {
+  color: #9f1239;
+  font-weight: 650;
+}
+
+.risk-benchmark.is-watch {
+  color: #92400e;
+  font-weight: 650;
+}
+
+.risk-benchmark.is-safe {
+  color: #065f46;
+  font-weight: 650;
+}
+
+.risk-metric.is-danger {
+  background: #fff1f2;
+  color: #9f1239;
+}
+
+.risk-metric.is-watch {
+  background: #fffbeb;
+  color: #92400e;
+}
+
+.risk-metric.is-safe {
+  background: #ecfdf5;
+  color: #065f46;
+}
+
+.risk-metric.is-danger .text-slate-500,
+.risk-metric.is-watch .text-slate-500,
+.risk-metric.is-safe .text-slate-500 {
+  color: inherit;
+  opacity: 0.72;
+}

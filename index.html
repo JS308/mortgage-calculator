@@ -367,16 +367,16 @@
     <form id="risk-form" novalidate class="space-y-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm lg:space-y-6">
       <div>
         <h2 class="text-base font-semibold">必填信息</h2>
-        <p class="mt-1 text-sm leading-relaxed text-slate-500">只填这三项，就能估算存款能撑几个月。月供单位是元，存款单位是万元。</p>
+        <p class="mt-1 text-sm leading-relaxed text-slate-500">只填这三项，就能估算流动性覆盖。年龄按 5 岁一档选择。金额一律按元填写，超过 1,000 会自动加上千分位。</p>
       </div>
       <label class="block text-sm font-medium text-slate-700">
         当前房贷月供（元）
-        <input id="risk-payment" name="risk-payment" type="text" inputmode="decimal" placeholder="例如 4500" autocomplete="off" required class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-base text-slate-900 outline-none ring-slate-900 focus:ring-2">
+        <input id="risk-payment" name="risk-payment" type="text" inputmode="decimal" placeholder="例如 4,500" autocomplete="off" required class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-base text-slate-900 outline-none ring-slate-900 focus:ring-2">
       </label>
       <button type="button" id="risk-use-calc" class="text-sm font-medium text-slate-700">使用提前还款策略算出的月供</button>
       <label class="block text-sm font-medium text-slate-700">
-        家庭总存款（万元）
-        <input id="risk-savings" name="risk-savings" type="text" inputmode="decimal" placeholder="含现金、理财、可提取的公积金" autocomplete="off" required class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-base text-slate-900 outline-none ring-slate-900 focus:ring-2">
+        家庭总存款（元）
+        <input id="risk-savings" name="risk-savings" type="text" inputmode="decimal" placeholder="例如 300,000" autocomplete="off" required class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-base text-slate-900 outline-none ring-slate-900 focus:ring-2">
       </label>
       <label class="block text-sm font-medium text-slate-700">
         用户年龄
@@ -385,18 +385,28 @@
 
       <details id="risk-advanced">
         <summary class="text-base font-semibold">
-          选填：补充收入和行业，算得更准
+          选填：补充家庭收入、小孩和行业，算得更准
           <span class="fold-hint">可选</span>
         </summary>
         <div class="mt-3 space-y-3">
-          <p class="text-sm leading-relaxed text-slate-500">这些留空时按 0 处理。填了配偶收入，就按一方失业、另一方继续领工资来算。</p>
+          <p class="text-sm leading-relaxed text-slate-500">这些留空时不额外加码。债务收入比用家庭税后月总收入。填了配偶收入，就按一方失业、另一方继续领工资来算。</p>
+          <label class="block text-sm font-medium text-slate-700">
+            小孩数量
+            <select id="risk-children" name="risk-children" class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-base text-slate-900 outline-none ring-slate-900 focus:ring-2">
+              <option value="0">没有小孩</option>
+              <option value="1">1 个</option>
+              <option value="2">2 个</option>
+              <option value="3">3 个</option>
+              <option value="4">4 个及以上</option>
+            </select>
+          </label>
           <label class="block text-sm font-medium text-slate-700">
             家庭税后月总收入（元）
-            <input id="risk-income" name="risk-income" type="text" inputmode="decimal" placeholder="例如 20000" autocomplete="off" class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-base text-slate-900 outline-none ring-slate-900 focus:ring-2">
+            <input id="risk-income" name="risk-income" type="text" inputmode="decimal" placeholder="例如 20,000" autocomplete="off" class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-base text-slate-900 outline-none ring-slate-900 focus:ring-2">
           </label>
           <label class="block text-sm font-medium text-slate-700">
             家庭日常月支出（元，不含房贷）
-            <input id="risk-living" name="risk-living" type="text" inputmode="decimal" placeholder="例如 6000" autocomplete="off" class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-base text-slate-900 outline-none ring-slate-900 focus:ring-2">
+            <input id="risk-living" name="risk-living" type="text" inputmode="decimal" placeholder="例如 6,000" autocomplete="off" class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-base text-slate-900 outline-none ring-slate-900 focus:ring-2">
           </label>
           <label class="block text-sm font-medium text-slate-700">
             行业属性
@@ -416,8 +426,8 @@
             <input id="risk-debt" name="risk-debt" type="text" inputmode="decimal" placeholder="车贷、消费贷等" autocomplete="off" class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-base text-slate-900 outline-none ring-slate-900 focus:ring-2">
           </label>
           <label class="block text-sm font-medium text-slate-700">
-            预计失业金及赔偿金总额（万元）
-            <input id="risk-severance" name="risk-severance" type="text" inputmode="decimal" placeholder="例如 5" autocomplete="off" class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-base text-slate-900 outline-none ring-slate-900 focus:ring-2">
+            预计失业金及赔偿金总额（元）
+            <input id="risk-severance" name="risk-severance" type="text" inputmode="decimal" placeholder="例如 50,000" autocomplete="off" class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-base text-slate-900 outline-none ring-slate-900 focus:ring-2">
           </label>
         </div>
       </details>
@@ -433,19 +443,20 @@
           <circle cx="24" cy="24" r="16" fill="none" stroke="currentColor" stroke-width="2"></circle>
           <path d="M24 14v11l7 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
         </svg>
-        <p class="text-base font-semibold text-slate-800">填写左侧信息，看看家庭存款能撑多久</p>
-        <p class="mt-2 text-sm leading-relaxed text-slate-500">评估后这里会显示可支撑月数、风险评级和安全月供上限。</p>
+        <p class="text-base font-semibold text-slate-800">填写左侧信息，查看流动性覆盖和债务收入比</p>
+        <p class="mt-2 text-sm leading-relaxed text-slate-500">评估后这里会显示流动性覆盖、债务收入比、压力测试月供和建议安全月供。</p>
       </aside>
       <section id="risk-result" hidden class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm lg:rounded-2xl lg:border lg:border-slate-200 lg:bg-white lg:p-6 lg:shadow-sm">
-        <p class="text-sm text-slate-500">您的家庭财务可支撑</p>
+        <p class="text-sm text-slate-500">流动性覆盖</p>
         <p class="risk-headline mt-2">
           <span id="risk-months" class="risk-months tabular-nums">—</span>
-          <span id="risk-months-unit" class="text-base font-semibold text-slate-700">个月的零收入状态</span>
+          <span id="risk-months-unit" class="text-base font-semibold text-slate-700">个月</span>
         </p>
+        <p id="risk-benchmark" class="risk-benchmark mt-2"></p>
         <p id="risk-gauge" class="risk-gauge mt-4"></p>
         <div class="mt-4 grid gap-3 lg:grid-cols-3 lg:gap-4">
           <div class="rounded-xl bg-slate-50 p-4">
-            <p class="text-sm text-slate-500">预计找工作</p>
+            <p class="text-sm text-slate-500">预计失业周期</p>
             <p id="risk-target" class="mt-1 text-xl font-semibold tabular-nums"></p>
           </div>
           <div class="rounded-xl bg-slate-50 p-4">
@@ -453,12 +464,19 @@
             <p id="risk-outflow" class="mt-1 text-xl font-semibold tabular-nums"></p>
           </div>
           <div class="rounded-xl bg-slate-50 p-4">
-            <p class="text-sm text-slate-500">安全月供上限</p>
+            <p class="text-sm text-slate-500">建议安全月供</p>
             <p id="risk-safe" class="mt-1 text-xl font-semibold tabular-nums"></p>
           </div>
+          <div id="risk-dti-card" class="risk-metric rounded-xl bg-slate-50 p-4">
+            <p class="text-sm text-slate-500">债务收入比 DTI</p>
+            <p id="risk-dti" class="mt-1 text-xl font-semibold tabular-nums">—</p>
+          </div>
+          <div class="rounded-xl bg-slate-50 p-4">
+            <p class="text-sm text-slate-500">压力测试月供</p>
+            <p id="risk-stress" class="mt-1 text-xl font-semibold tabular-nums">—</p>
+          </div>
         </div>
-        <p id="risk-advice" class="mt-4 text-base font-semibold leading-relaxed text-slate-900"></p>
-        <p id="risk-detail" class="mt-2 text-sm leading-relaxed text-slate-500"></p>
+        <div id="risk-advice" class="mt-4 space-y-3 text-sm leading-relaxed text-slate-700"></div>
       </section>
     </div>
     </div>
