@@ -915,3 +915,68 @@ input.field-missing {
   margin: 0.75rem 0 0;
   padding: 0;
 }
+
+.risk-headline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.35rem 0.5rem;
+}
+
+.risk-months {
+  font-size: 3.25rem;
+  line-height: 1;
+  font-weight: 650;
+  letter-spacing: -0.03em;
+}
+
+.risk-gauge {
+  border-radius: 1rem;
+  padding: 0.9rem 1rem;
+  font-size: 1rem;
+  font-weight: 650;
+  line-height: 1.55;
+}
+
+.risk-gauge.is-danger {
+  background: #fff1f2;
+  color: #9f1239;
+}
+
+.risk-gauge.is-watch {
+  background: #fffbeb;
+  color: #92400e;
+}
+
+.risk-gauge.is-safe {
+  background: #ecfdf5;
+  color: #065f46;
+}
+
+.risk-placeholder {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .risk-placeholder {
+    display: flex;
+    min-height: 22rem;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 2.5rem;
+    text-align: center;
+    border: 1px solid #e2e8f0;
+    border-radius: 1rem;
+    background: #fff;
+    color: #64748b;
+  }
+  .risk-placeholder svg {
+    width: 3rem;
+    height: 3rem;
+    margin-bottom: 1rem;
+  }
+  .risk-desk:has(#risk-result:not([hidden])) .risk-placeholder {
+    display: none;
+  }
+}

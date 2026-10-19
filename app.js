@@ -25,6 +25,10 @@ let chartKneeMonths = [];
 let chartToken = 0;
 let latestReport = null;
 
+function linkedMortgagePayment() {
+  return latestReport && latestReport.originalPayment > 0 ? latestReport.originalPayment : 0;
+}
+
 planSwitch.addEventListener("click", (event) => {
   const button = event.target.closest("button");
   if (!button || !button.dataset.plan) return;
@@ -322,6 +326,7 @@ form.addEventListener("submit", (event) => {
         schedule: plan.schedule,
       })),
     };
+    if (typeof syncRiskPaymentFromReport === "function") syncRiskPaymentFromReport();
     result.scrollIntoView({ behavior: "smooth", block: "start" });
   } catch (error) {
     message.textContent = error.message;

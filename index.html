@@ -31,12 +31,18 @@
   <main class="mx-auto w-full max-w-xl max-w-[1200px] px-4 py-6 sm:py-10 lg:max-w-[1200px] lg:px-8">
     <header class="mb-5 flex items-center justify-between gap-3">
       <div>
-        <h1 class="text-2xl font-semibold tracking-tight lg:text-3xl">房贷提前还款策略</h1>
-        <p class="mt-1 text-sm text-slate-500">对比提前还款、转贷与机会成本</p>
+        <h1 id="page-title" class="text-2xl font-semibold tracking-tight lg:text-3xl">房贷提前还款策略</h1>
+        <p id="page-subtitle" class="mt-1 text-sm text-slate-500">对比提前还款、转贷与机会成本</p>
       </div>
       <span id="method-badge" class="rounded-full bg-slate-900 px-3 py-1.5 text-xs font-medium text-white">等额本息</span>
     </header>
 
+    <div class="mb-5 grid grid-cols-2 gap-2" role="tablist">
+      <button type="button" id="tab-calc" class="rounded-xl bg-slate-900 px-3 py-2 text-sm font-semibold text-white" role="tab" aria-selected="true">提前还款策略</button>
+      <button type="button" id="tab-risk" class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800" role="tab" aria-selected="false">还款能力风险评估</button>
+    </div>
+
+    <div id="panel-calc">
     <div class="lg:grid lg:grid-cols-12 lg:items-start lg:gap-8">
     <div class="lg:col-span-5 lg:sticky lg:top-6 lg:h-fit lg:self-start">
     <form id="form" novalidate class="space-y-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm lg:space-y-6">
@@ -353,6 +359,110 @@
     </section>
     </div>
     </div>
+    </div>
+
+    <div id="panel-risk" hidden>
+    <div class="lg:grid lg:grid-cols-12 lg:items-start lg:gap-8">
+    <div class="lg:col-span-5 lg:sticky lg:top-6 lg:h-fit lg:self-start">
+    <form id="risk-form" novalidate class="space-y-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm lg:space-y-6">
+      <div>
+        <h2 class="text-base font-semibold">必填信息</h2>
+        <p class="mt-1 text-sm leading-relaxed text-slate-500">只填这三项，就能估算存款能撑几个月。月供单位是元，存款单位是万元。</p>
+      </div>
+      <label class="block text-sm font-medium text-slate-700">
+        当前房贷月供（元）
+        <input id="risk-payment" name="risk-payment" type="text" inputmode="decimal" placeholder="例如 4500" autocomplete="off" required class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-base text-slate-900 outline-none ring-slate-900 focus:ring-2">
+      </label>
+      <button type="button" id="risk-use-calc" class="text-sm font-medium text-slate-700">使用提前还款策略算出的月供</button>
+      <label class="block text-sm font-medium text-slate-700">
+        家庭总存款（万元）
+        <input id="risk-savings" name="risk-savings" type="text" inputmode="decimal" placeholder="含现金、理财、可提取的公积金" autocomplete="off" required class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-base text-slate-900 outline-none ring-slate-900 focus:ring-2">
+      </label>
+      <label class="block text-sm font-medium text-slate-700">
+        用户年龄
+        <select id="risk-age" name="risk-age" required class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-base text-slate-900 outline-none ring-slate-900 focus:ring-2"></select>
+      </label>
+
+      <details id="risk-advanced">
+        <summary class="text-base font-semibold">
+          选填：补充收入和行业，算得更准
+          <span class="fold-hint">可选</span>
+        </summary>
+        <div class="mt-3 space-y-3">
+          <p class="text-sm leading-relaxed text-slate-500">这些留空时按 0 处理。填了配偶收入，就按一方失业、另一方继续领工资来算。</p>
+          <label class="block text-sm font-medium text-slate-700">
+            家庭税后月总收入（元）
+            <input id="risk-income" name="risk-income" type="text" inputmode="decimal" placeholder="例如 20000" autocomplete="off" class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-base text-slate-900 outline-none ring-slate-900 focus:ring-2">
+          </label>
+          <label class="block text-sm font-medium text-slate-700">
+            家庭日常月支出（元，不含房贷）
+            <input id="risk-living" name="risk-living" type="text" inputmode="decimal" placeholder="例如 6000" autocomplete="off" class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-base text-slate-900 outline-none ring-slate-900 focus:ring-2">
+          </label>
+          <label class="block text-sm font-medium text-slate-700">
+            行业属性
+            <select id="risk-industry" name="risk-industry" class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-base text-slate-900 outline-none ring-slate-900 focus:ring-2">
+              <option value="">不调整</option>
+              <option value="stable">体制内/国企</option>
+              <option value="traditional">传统行业</option>
+              <option value="internet">互联网/私企</option>
+            </select>
+          </label>
+          <label class="block text-sm font-medium text-slate-700">
+            配偶税后月收入（元）
+            <input id="risk-spouse" name="risk-spouse" type="text" inputmode="decimal" placeholder="填写后按双职工、一方失业计算" autocomplete="off" class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-base text-slate-900 outline-none ring-slate-900 focus:ring-2">
+          </label>
+          <label class="block text-sm font-medium text-slate-700">
+            其他月度负债（元）
+            <input id="risk-debt" name="risk-debt" type="text" inputmode="decimal" placeholder="车贷、消费贷等" autocomplete="off" class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-base text-slate-900 outline-none ring-slate-900 focus:ring-2">
+          </label>
+          <label class="block text-sm font-medium text-slate-700">
+            预计失业金及赔偿金总额（万元）
+            <input id="risk-severance" name="risk-severance" type="text" inputmode="decimal" placeholder="例如 5" autocomplete="off" class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-base text-slate-900 outline-none ring-slate-900 focus:ring-2">
+          </label>
+        </div>
+      </details>
+
+      <button type="submit" class="w-full rounded-xl bg-slate-900 px-4 py-3 text-base font-semibold text-white active:bg-slate-800">评估风险</button>
+    </form>
+    <p id="risk-message" class="empty:hidden mt-3 text-sm text-rose-700" role="alert"></p>
+    </div>
+
+    <div class="risk-desk lg:col-span-7 lg:overflow-hidden">
+      <aside class="risk-placeholder">
+        <svg viewBox="0 0 48 48" aria-hidden="true">
+          <circle cx="24" cy="24" r="16" fill="none" stroke="currentColor" stroke-width="2"></circle>
+          <path d="M24 14v11l7 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+        </svg>
+        <p class="text-base font-semibold text-slate-800">填写左侧信息，看看家庭存款能撑多久</p>
+        <p class="mt-2 text-sm leading-relaxed text-slate-500">评估后这里会显示可支撑月数、风险评级和安全月供上限。</p>
+      </aside>
+      <section id="risk-result" hidden class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm lg:rounded-2xl lg:border lg:border-slate-200 lg:bg-white lg:p-6 lg:shadow-sm">
+        <p class="text-sm text-slate-500">您的家庭财务可支撑</p>
+        <p class="risk-headline mt-2">
+          <span id="risk-months" class="risk-months tabular-nums">—</span>
+          <span id="risk-months-unit" class="text-base font-semibold text-slate-700">个月的零收入状态</span>
+        </p>
+        <p id="risk-gauge" class="risk-gauge mt-4"></p>
+        <div class="mt-4 grid gap-3 lg:grid-cols-3 lg:gap-4">
+          <div class="rounded-xl bg-slate-50 p-4">
+            <p class="text-sm text-slate-500">预计找工作</p>
+            <p id="risk-target" class="mt-1 text-xl font-semibold tabular-nums"></p>
+          </div>
+          <div class="rounded-xl bg-slate-50 p-4">
+            <p class="text-sm text-slate-500">每月净流出</p>
+            <p id="risk-outflow" class="mt-1 text-xl font-semibold tabular-nums"></p>
+          </div>
+          <div class="rounded-xl bg-slate-50 p-4">
+            <p class="text-sm text-slate-500">安全月供上限</p>
+            <p id="risk-safe" class="mt-1 text-xl font-semibold tabular-nums"></p>
+          </div>
+        </div>
+        <p id="risk-advice" class="mt-4 text-base font-semibold leading-relaxed text-slate-900"></p>
+        <p id="risk-detail" class="mt-2 text-sm leading-relaxed text-slate-500"></p>
+      </section>
+    </div>
+    </div>
+    </div>
 
     <dialog id="paid-helper">
       <div class="space-y-4">
@@ -401,5 +511,6 @@
   </dialog>
   <script src="mortgage.js"></script>
   <script src="app.js"></script>
+  <script src="risk.js"></script>
 </body>
 </html>
