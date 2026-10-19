@@ -194,6 +194,7 @@ form.addEventListener("submit", (event) => {
     });
 
     payment.textContent = formatYuan(originalPayment);
+    document.getElementById("loan-total").textContent = formatYuan(principal);
     renderInterestSplit(interestSummary);
     renderComboSummary(combo);
 
@@ -1635,7 +1636,7 @@ function lineChartOptions(staticImage, compact) {
       x: {
         type: "linear",
         min: 0,
-        title: { display: !compact, text: "月份" },
+        title: { display: !compact, text: "期数" },
         ticks: {
           maxTicksLimit: compact ? 4 : 6,
           font: tickFont,
@@ -2327,14 +2328,16 @@ function imageChartSection() {
     const image = document.createElement("img");
     image.alt = title;
     image.src = renderStaticChart(kind, start, false);
-    card.append(heading, image);
+    const parts = [heading];
     if (kind === "interest" && knee && !knee.hidden && knee.childElementCount) {
       const note = knee.cloneNode(true);
       note.removeAttribute("id");
       note.hidden = false;
       note.classList.add("image-chart-note");
-      card.append(note);
+      parts.push(note);
     }
+    parts.push(image);
+    card.append(...parts);
     section.append(card);
   });
   return section;
