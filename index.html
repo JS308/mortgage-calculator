@@ -26,12 +26,85 @@
     s.parentNode.insertBefore(hm, s);
   })();
   </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "房贷提前还款，缩短年限和减少月供哪个更划算？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "通常来说，选择「缩短年限」能节省更多的总利息，因为本金减少得更快；而「减少月供」虽然省下的利息少一些，但能立刻减轻每月的现金流压力。建议使用本站的计算器输入您的真实数据，一键对比两种策略的利息差额。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "提前还房贷有违约金吗？怎么算？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "多数银行规定，房贷还款满 1 年后提前还款免收违约金，未满 1 年可能会收取还款金额的 1%-3% 或几个月利息。具体请以您的贷款合同为准。您可以利用本站的机会成本对比功能，算一算扣掉违约金后是否依然划算。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "等额本息和等额本金，哪个更适合提前还款？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "等额本金前期还的本金多，利息总额少；等额本息前期还的利息多。如果是等额本息，最佳提前还款时间通常在贷款周期的前 1/3 内；如果已进入中后期，此时月供中利息占比已经很低，提前还款的性价比会大幅下降。您可通过本站的「利息拐点」图表直观看到这一时间节点。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "买房除了首付，还要交哪些隐形费用？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "买房时除了首付，通常还需要准备：契税（1%-3%）、房屋维修基金、印花税、中介费（二手房）、以及交房后的装修预算和家具家电等。建议使用本站的「购房成本计算」模块，预估一次性需要准备的总现金，避免预算超支。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "月供占家庭月收入多少比较合适？（DTI 债务收入比）",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "国际通用的健康标准是，房贷月供不应超过家庭税后月收入的 28%-36%（即 DTI 债务收入比）。如果超过 43%，则被视为高风险（Danger），银行审批贷款时也会非常严格。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "如果失业了，房贷断供了怎么办？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "建议提前保留至少 6-12 个月的月供作为紧急备用金。如果您担心未来的还款风险，请使用本站的「还款能力风险评估」模块，输入您的存款和年龄，系统会测算您的家庭财务在零收入状态下能支撑几个月，并反推建议的安全月供上限。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "公积金贷款和商贷（组合贷）怎么算？提前还款先还哪个？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "组合贷计算时，公积金和商贷的利率和年限是分开计算的。在提前还款时，强烈建议「优先偿还商贷」，因为商贷利率通常远高于公积金。优先还商贷能省下更多利息。本站计算器已内置此逻辑，输入金额即可自动为您对比。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "LPR 降息了，我的房贷什么时候降？月供会变少吗？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "如果您的房贷是浮动利率（LPR），通常会在每年的 1 月 1 日或贷款发放日进行重定价。当 LPR 下降时，您的月供会相应减少（或期限缩短）。您可以使用本站计算器输入新的利率，重新测算降息后的月供变化。"
+        }
+      }
+    ]
+  }
+  </script>
 </head>
 <body class="calc-page min-h-screen bg-slate-50 font-sans text-slate-900">
   <main class="mx-auto w-full max-w-xl max-w-[1200px] px-4 py-6 sm:py-10 lg:max-w-[1200px] lg:px-8">
     <header class="mb-5 flex items-center justify-between gap-3">
       <div>
         <h1 id="page-title" class="text-2xl font-semibold tracking-tight lg:text-3xl">房贷提前还款策略</h1>
+        <h2 class="page-seo-subtitle">免费在线房贷计算器，支持商贷/公积金组合贷、提前还款及转贷对比。</h2>
         <p id="page-subtitle" class="mt-1 text-sm text-slate-500">对比提前还款、转贷与机会成本</p>
       </div>
       <span id="method-badge" class="rounded-full bg-slate-900 px-3 py-1.5 text-xs font-medium text-white">等额本息</span>
@@ -515,6 +588,73 @@
       </div>
     </dialog>
   </main>
+  <section class="faq-section" aria-labelledby="faq-title">
+    <div class="faq-head">
+      <h2 id="faq-title">房贷计算与购房常见问题</h2>
+      <button type="button" id="faq-toggle-all" class="faq-toggle-all" aria-expanded="false">[+] 展开全部</button>
+    </div>
+    <div class="faq-list">
+      <details class="faq-item">
+        <summary><h3>房贷提前还款，缩短年限和减少月供哪个更划算？</h3></summary>
+        <p>通常来说，选择「缩短年限」能节省更多的总利息，因为本金减少得更快；而「减少月供」虽然省下的利息少一些，但能立刻减轻每月的现金流压力。建议使用本站的计算器输入您的真实数据，一键对比两种策略的利息差额。</p>
+      </details>
+      <details class="faq-item">
+        <summary><h3>提前还房贷有违约金吗？怎么算？</h3></summary>
+        <p>多数银行规定，房贷还款满 1 年后提前还款免收违约金，未满 1 年可能会收取还款金额的 1%-3% 或几个月利息。具体请以您的贷款合同为准。您可以利用本站的机会成本对比功能，算一算扣掉违约金后是否依然划算。</p>
+      </details>
+      <details class="faq-item">
+        <summary><h3>等额本息和等额本金，哪个更适合提前还款？</h3></summary>
+        <p>等额本金前期还的本金多，利息总额少；等额本息前期还的利息多。如果是等额本息，最佳提前还款时间通常在贷款周期的前 1/3 内；如果已进入中后期，此时月供中利息占比已经很低，提前还款的性价比会大幅下降。您可通过本站的「利息拐点」图表直观看到这一时间节点。</p>
+      </details>
+      <details class="faq-item">
+        <summary><h3>买房除了首付，还要交哪些隐形费用？</h3></summary>
+        <p>买房时除了首付，通常还需要准备：契税（1%-3%）、房屋维修基金、印花税、中介费（二手房）、以及交房后的装修预算和家具家电等。建议使用本站的「购房成本计算」模块，预估一次性需要准备的总现金，避免预算超支。</p>
+      </details>
+      <details class="faq-item">
+        <summary><h3>月供占家庭月收入多少比较合适？（DTI 债务收入比）</h3></summary>
+        <p>国际通用的健康标准是，房贷月供不应超过家庭税后月收入的 28%-36%（即 DTI 债务收入比）。如果超过 43%，则被视为高风险（Danger），银行审批贷款时也会非常严格。</p>
+      </details>
+      <details class="faq-item">
+        <summary><h3>如果失业了，房贷断供了怎么办？</h3></summary>
+        <p>建议提前保留至少 6-12 个月的月供作为紧急备用金。如果您担心未来的还款风险，请使用本站的「还款能力风险评估」模块，输入您的存款和年龄，系统会测算您的家庭财务在零收入状态下能支撑几个月，并反推建议的安全月供上限。</p>
+      </details>
+      <details class="faq-item">
+        <summary><h3>公积金贷款和商贷（组合贷）怎么算？提前还款先还哪个？</h3></summary>
+        <p>组合贷计算时，公积金和商贷的利率和年限是分开计算的。在提前还款时，强烈建议「优先偿还商贷」，因为商贷利率通常远高于公积金。优先还商贷能省下更多利息。本站计算器已内置此逻辑，输入金额即可自动为您对比。</p>
+      </details>
+      <details class="faq-item">
+        <summary><h3>LPR 降息了，我的房贷什么时候降？月供会变少吗？</h3></summary>
+        <p>如果您的房贷是浮动利率（LPR），通常会在每年的 1 月 1 日或贷款发放日进行重定价。当 LPR 下降时，您的月供会相应减少（或期限缩短）。您可以使用本站计算器输入新的利率，重新测算降息后的月供变化。</p>
+      </details>
+    </div>
+  </section>
+  <script>
+  (function () {
+    var button = document.getElementById("faq-toggle-all");
+    var items = document.querySelectorAll(".faq-item");
+    if (!button || !items.length) return;
+
+    function allOpen() {
+      return Array.prototype.every.call(items, function (item) { return item.open; });
+    }
+
+    function sync() {
+      var open = allOpen();
+      button.textContent = open ? "[-] 收起全部" : "[+] 展开全部";
+      button.setAttribute("aria-expanded", open ? "true" : "false");
+    }
+
+    button.addEventListener("click", function () {
+      var open = !allOpen();
+      Array.prototype.forEach.call(items, function (item) { item.open = open; });
+      sync();
+    });
+
+    Array.prototype.forEach.call(items, function (item) {
+      item.addEventListener("toggle", sync);
+    });
+  })();
+  </script>
   <div class="page-foot">
   <p class="site-disclaimer">免责声明：本工具仅供个人数学逻辑测算与技术交流使用，不构成任何金融、投资、贷款建议。所有数据均为用户自行输入，具体还款金额与政策请以实际放款银行官方公布为准。</p>
   <footer class="site-footer">© 2026 <a href="index.html">房贷提前还款计算器</a> | <a href="about.html">关于我们</a> | <a href="privacy.html">隐私政策</a> | <a href="about.html#disclaimer">免责声明</a></footer>
