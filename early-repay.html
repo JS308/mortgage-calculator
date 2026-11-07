@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>提前还款能省多少利息？缩短年限 vs 减少月供对比 - 房贷计算器</title>
+  <meta name="description" content="输入剩余本金和提前还款金额，一键对比缩短年限与减少月供的利息差额。支持自动反推当前房贷利率，直观展示提前还款节省的真实利息。">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .er-save {
+      font-size: 2.75rem;
+      line-height: 1;
+      font-weight: 650;
+      letter-spacing: -0.03em;
+    }
+    @media (min-width: 1024px) {
+      .er-save { font-size: 3.25rem; }
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-slate-50 font-sans text-slate-900">
+  <main id="early-repay" class="mx-auto w-full max-w-xl px-4 py-6 sm:py-10 lg:max-w-[1200px] lg:px-8">
+    <h1 class="text-2xl font-semibold tracking-tight lg:text-3xl">提前还款，到底能省多少？</h1>
+    <p class="mt-1 text-sm text-slate-500">支持等额本息，自动反推当前利率，输入金额直接看两套方案对比。</p>
+
+    <form id="er-form" novalidate class="mt-4 space-y-4">
+      <div class="grid grid-cols-2 gap-3">
+        <label class="block text-sm font-medium text-slate-700">
+          剩余本金（万元）
+          <input id="er-principal" name="principal" type="text" inputmode="decimal" value="80" autocomplete="off" class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-base text-slate-900 outline-none ring-slate-900 focus:ring-2">
+        </label>
+        <label class="block text-sm font-medium text-slate-700">
+          当前月供（元）
+          <input id="er-payment" name="payment" type="text" inputmode="decimal" value="4476.94" autocomplete="off" class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-base text-slate-900 outline-none ring-slate-900 focus:ring-2">
+        </label>
+        <label class="block text-sm font-medium text-slate-700">
+          剩余期数（月）
+          <input id="er-months" name="months" type="text" inputmode="numeric" value="240" autocomplete="off" class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-base text-slate-900 outline-none ring-slate-900 focus:ring-2">
+        </label>
+        <label class="block text-sm font-medium text-slate-700">
+          计划提前还款金额（万元）
+          <input id="er-prepay" name="prepay" type="text" inputmode="decimal" value="20" autocomplete="off" class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-base text-slate-900 outline-none ring-slate-900 focus:ring-2">
+          <span id="er-prepay-hint" class="mt-1.5 block text-sm font-normal text-rose-700" hidden>提前还款金额不能大于剩余本金</span>
+        </label>
+        <label class="block text-sm font-medium text-slate-700">
+          第几期提前还（可选）
+          <input id="er-when" name="when" type="text" inputmode="numeric" value="1" placeholder="默认下一期" autocomplete="off" class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-base text-slate-900 outline-none ring-slate-900 focus:ring-2">
+        </label>
+      </div>
+      <button id="er-calc" type="submit" class="w-full rounded-xl bg-slate-900 px-4 py-3 text-base font-semibold text-white active:bg-slate-800 disabled:opacity-60">对比方案</button>
+      <p id="message" role="alert"></p>
+    </form>
+
+    <section id="er-result" class="mt-4 space-y-4" hidden>
+      <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <article class="rounded-2xl border border-slate-200 bg-emerald-50 p-4 shadow-sm">
+          <h2 class="text-sm font-semibold text-emerald-950">方案 A：缩短年限</h2>
+          <p class="mt-3 text-sm font-medium text-emerald-950">节省利息</p>
+          <p id="save-a" class="er-save mt-1 tabular-nums text-emerald-950">¥0.00 万</p>
+          <p id="note-a" class="mt-3 text-sm leading-relaxed text-slate-700">月供基本不变。</p>
+        </article>
+        <article class="rounded-2xl border border-slate-200 bg-sky-50 p-4 shadow-sm">
+          <h2 class="text-sm font-semibold text-sky-950">方案 B：减少月供</h2>
+          <p class="mt-3 text-sm font-medium text-sky-950">节省利息</p>
+          <p id="save-b" class="er-save mt-1 tabular-nums text-sky-950">¥0.00 万</p>
+          <p id="note-b" class="mt-3 text-sm leading-relaxed text-slate-700">年限不变。</p>
+        </article>
+      </div>
+      <p id="advice" class="advice-card"></p>
+      <details class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+        <summary class="text-base font-semibold">展开更多方案对比</summary>
+        <div class="mt-3 space-y-3 text-sm leading-relaxed text-slate-600">
+          <p id="more-note"></p>
+          <p>组合贷、分批还款、转贷和机会成本仍在完整计算器里，算法与这里相同。</p>
+          <a href="index.html" class="inline-flex rounded-xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white">打开完整房贷计算器</a>
+        </div>
+      </details>
+    </section>
+  </main>
+  <p class="site-disclaimer">免责声明：本工具仅供个人数学逻辑测算与技术交流使用，不构成任何金融、投资、贷款建议。所有数据均为用户自行输入，具体还款金额与政策请以实际放款银行官方公布为准。</p>
+  <footer class="site-footer">© 2026 <a href="index.html">房贷提前还款计算器</a> | <a href="about.html">关于我们</a> | <a href="privacy.html">隐私政策</a> | <a href="about.html#disclaimer">免责声明</a></footer>
+  <script src="mortgage.js"></script>
+  <script>
+    (function () {
+      var form = document.getElementById("er-form");
+      var result = document.getElementById("er-result");
+      var message = document.getElementById("message");
+      var prepayInput = document.getElementById("er-prepay");
+      var prepayHint = document.getElementById("er-prepay-hint");
+      var submitBtn = document.getElementById("er-calc");
+
+      function prepayGuard() {
+        var principalRaw = readRaw("er-principal");
+        var prepayRaw = readRaw("er-prepay");
+        var principal = Number(principalRaw);
+        var prepay = Number(prepayRaw);
+        var comparable = principalRaw !== "" && prepayRaw !== "" && Number.isFinite(principal) && Number.isFinite(prepay);
+        var over = comparable && prepay > principal;
+        var nonPositive = prepayRaw !== "" && Number.isFinite(prepay) && prepay <= 0;
+        prepayInput.classList.toggle("field-missing", over);
+        prepayHint.hidden = !over;
+        submitBtn.disabled = over || nonPositive;
+        return submitBtn.disabled;
+      }
+
+      function fail(text) {
+        message.textContent = text;
+        result.hidden = true;
+      }
+
+      function readRaw(id) {
+        return document.getElementById(id).value.replace(/,/g, "").replace(/\s/g, "").trim();
+      }
+
+      function readMoney(id, label, allowZero) {
+        var raw = readRaw(id);
+        if (raw === "") throw new Error("请填写" + label);
+        var value = Number(raw);
+        if (!Number.isFinite(value) || value < 0 || (!allowZero && value === 0)) {
+          throw new Error(label + "必须是大于 0 的数字");
+        }
+        return value;
+      }
+
+      function formatYuan(amount) {
+        var value = roundMoney(amount);
+        var sign = value < 0 ? "-" : "";
+        return sign + "¥" + Math.abs(value).toLocaleString("zh-CN", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        });
+      }
+
+      function formatWan(amount) {
+        var wan = roundMoney(amount) / 10000;
+        var sign = wan < 0 ? "-" : "";
+        return sign + "¥" + Math.abs(wan).toLocaleString("zh-CN", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        }) + " 万";
+      }
+
+      function aheadText(earlyMonths) {
+        if (earlyMonths <= 0) return "月供基本不变，还款期限基本不变。";
+        var years = Math.floor(earlyMonths / 12);
+        var months = earlyMonths % 12;
+        var span = "";
+        if (years > 0) span += years + " 年";
+        if (months > 0) span += (span ? " " : "") + months + " 个月";
+        return "月供基本不变，可提前 " + span + "还清。";
+      }
+
+      function solveAnnualRate(principal, payment, months) {
+        var zero = calcMonthlyPayment(principal, 0, months);
+        if (payment + 0.05 < zero) {
+          throw new Error("当前月供太低，按剩余本金和剩余期数即使不计利息也还不清。请核对这三个数。");
+        }
+        if (Math.abs(payment - zero) <= 0.05) return 0;
+        var low = 0;
+        var high = 0.24;
+        var guard = 0;
+        while (calcMonthlyPayment(principal, high / 12, months) < payment && guard < 6) {
+          high *= 2;
+          guard += 1;
+        }
+        if (calcMonthlyPayment(principal, high / 12, months) < payment) {
+          throw new Error("当前月供和剩余本金、剩余期数对不上。请核对这三个数。");
+        }
+        for (var i = 0; i < 70; i++) {
+          var mid = (low + high) / 2;
+          if (calcMonthlyPayment(principal, mid / 12, months) > payment) high = mid;
+          else low = mid;
+        }
+        return (low + high) / 2;
+      }
+
+      function sumInterest(schedule) {
+        return roundMoney(schedule.reduce(function (sum, row) {
+          return sum + row.利息部分;
+        }, 0));
+      }
+
+      function runSchedules(principal, annualRate, months, extra) {
+        var originalReadLoan = readLoan;
+        readLoan = function (amount, rate, years, extraPayments) {
+          return readLoanByMonths(amount, rate, months, extraPayments);
+        };
+        try {
+          var shortened = calcEqualInstallment(principal, annualRate, 1, extra, 0);
+          var reduced = calcReducedPayment(principal, annualRate, 1, extra, 0);
+          var original = calcEqualInstallment(principal, annualRate, 1, null, 0);
+          return { original: original, shortened: shortened, reduced: reduced };
+        } finally {
+          readLoan = originalReadLoan;
+        }
+      }
+
+      function paymentAfter(schedule, prepayMonth) {
+        var next = null;
+        for (var i = 0; i < schedule.length; i++) {
+          if (schedule[i].月份 > prepayMonth) {
+            next = schedule[i];
+            break;
+          }
+        }
+        return next ? next.月供 : 0;
+      }
+
+      function formatYuanInt(amount) {
+        return "¥" + Math.max(0, Math.round(amount)).toLocaleString("zh-CN") + " 元";
+      }
+
+      function adviceText(savedA, savedB, prepay, months) {
+        var diff = roundMoney(Math.abs(savedA - savedB));
+        var perMonth = months > 0 ? diff / months : 0;
+        var cost = "（相当于每个月多花 " + formatYuanInt(perMonth) + "）";
+        if (!(prepay > 0)) {
+          return "利息差额为 ¥0.00 万" + cost + "。填写计划提前还款金额后，才能看出两个方案差多少。";
+        }
+        if (diff < 100) {
+          return "利息差额不到 ¥0.01 万" + cost + "。两种方案差不多。若更在意每月现金流，方案 B 就能立刻减轻月供。";
+        }
+        var text = "利息差额为 " + formatWan(diff) + cost + "。";
+        if (savedA >= savedB) {
+          return text + "若未来 3 年现金流稳定，方案 A 的长期节省更明显。";
+        }
+        return text + "方案 B 省下的利息更高，同时每月还款也会下降。";
+      }
+
+      function calculate() {
+        try {
+          if (prepayGuard()) {
+            message.textContent = "";
+            result.hidden = true;
+            return;
+          }
+          if (typeof calcEqualInstallment !== "function" || typeof calcReducedPayment !== "function") {
+            throw new Error("现有还款公式没有加载。");
+          }
+          var principal = roundMoney(readMoney("er-principal", "剩余本金") * 10000);
+          var payment = roundMoney(readMoney("er-payment", "当前月供"));
+          var monthsRaw = readRaw("er-months");
+          if (monthsRaw === "") throw new Error("请填写剩余期数");
+          var months = Number(monthsRaw);
+          if (!Number.isInteger(months) || months <= 0) throw new Error("剩余期数必须是大于 0 的整数");
+          if (months > 600) throw new Error("剩余期数最多按 600 期计算");
+          var prepayWan = readMoney("er-prepay", "计划提前还款金额", true);
+          var prepay = roundMoney(prepayWan * 10000);
+          var whenRaw = readRaw("er-when");
+          var when = whenRaw === "" ? 1 : Number(whenRaw);
+          if (!Number.isInteger(when) || when < 1 || when > months) {
+            throw new Error("第几期提前还要填 1 到剩余期数之间的整数，留空则按下一期");
+          }
+          var annualRate = solveAnnualRate(principal, payment, months);
+          var extra = prepay > 0 ? [{ 月份: when, 金额: prepay }] : null;
+          var plans = runSchedules(principal, annualRate, months, extra);
+          if (Math.abs(plans.original.length - months) > 1) {
+            throw new Error("没能按剩余期数套用现有还款公式。");
+          }
+
+          var savedA = roundMoney(sumInterest(plans.original) - sumInterest(plans.shortened));
+          var savedB = roundMoney(sumInterest(plans.original) - sumInterest(plans.reduced));
+          var earlyMonths = plans.original.length - plans.shortened.length;
+          var basePay = plans.original[0].月供;
+          var newPay = paymentAfter(plans.reduced, when);
+          var less = roundMoney(basePay - newPay);
+          var sameTerm = plans.reduced.length === plans.original.length;
+
+          document.getElementById("save-a").textContent = formatWan(savedA);
+          document.getElementById("note-a").textContent = aheadText(earlyMonths);
+          document.getElementById("save-b").textContent = formatWan(savedB);
+          document.getElementById("note-b").textContent = sameTerm
+            ? "年限不变，新月供降至 " + formatYuan(newPay) + "，每月少还 " + formatYuan(Math.max(0, less)) + "。"
+            : "提前还款后贷款会结清，之后月供降至 " + formatYuan(newPay) + "。";
+          document.getElementById("advice").textContent = adviceText(savedA, savedB, prepay, months);
+          document.getElementById("more-note").textContent = "按等额本息，由当前月供反推年利率约 " + (annualRate * 100).toFixed(2) + "%。缩短年限可提前 " + Math.floor(earlyMonths / 12) + " 年 " + (earlyMonths % 12) + " 个月还清。两个方案都使用现有的等额本息公式。";
+          message.textContent = "";
+          result.hidden = false;
+        } catch (error) {
+          fail(error && error.message ? error.message : "算不出来，请检查填写的数字。");
+        }
+      }
+
+      form.addEventListener("submit", function (event) {
+        event.preventDefault();
+        calculate();
+      });
+      form.addEventListener("input", calculate);
+      calculate();
+    })();
+  </script>
+</body>
+</html>
