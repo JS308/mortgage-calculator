@@ -3,9 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>房贷提前还款计算器 - 缩短年限与减少月供对比工具</title>
-  <meta name="description" content="免费的房贷提前还款策略模拟器。支持商贷公积金组合贷，精准对比缩短年限与减少月供的利息差额。提供转贷分析及存款理财机会成本对比，一键导出PDF报告。">
-  <meta name="keywords" content="提前还款,房贷计算器,缩短年限,减少月供,商贷转公积金,组合贷,提前还贷划算吗,存贷利率对比,机会成本">
+  <title>房贷提前还款计算器 - 多笔提前还、理财对比、断供风险</title>
+  <meta name="description" content="房贷提前还款计算器，不是只算月供。支持多笔提前还，对比缩短年限和减少月供；同一笔钱拿去理财时算出机会成本，并按存款和收入评估失业后的断供风险。">
+  <meta name="keywords" content="房贷提前还款计算器,多笔提前还款,分批提前还贷,理财机会成本,断供风险评估,缩短年限,减少月供,组合贷">
+  <link rel="canonical" href="https://www.tqhuan.cn/">
   <meta name="baidu-site-verification" content="codeva-ibiAlhviFeT" />
   <link rel="stylesheet" href="styles.css">
   <script>
@@ -31,6 +32,38 @@
     "@context": "https://schema.org",
     "@type": "FAQPage",
     "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "这个工具和普通房贷计算器有什么不同？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "普通房贷计算器只算月供。这里专门算提前还款：可以一次还，也可以分多笔还；缩短年限和减少月供的利息差额能直接对比；同一笔钱拿去理财时，会算出机会成本；还可以按月供、存款和年龄，评估失业后的断供风险。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "可以分多笔提前还款吗？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "可以。在「分批还款」里按期添加每一笔金额，也可以设置每年固定还一笔。计算器会按实际还款顺序重算剩余本金、月供和总利息。组合贷默认先还利率更高的商贷。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "提前还款和拿去理财，怎么比机会成本？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "在「机会成本对比」里填写手头闲钱，以及这笔钱如果存着或理财能拿到的年化收益率。计算器会比较：用这笔钱缩短年限、用它减少月供，以及按月复利存到原贷款结束，看提前还是不是更划算。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "怎么评估房贷断供风险？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "打开「还款能力风险评估」，填写当前月供、家庭存款和年龄。结果会给出零收入时还能支撑几个月，并反推建议的安全月供上限。月供超过家庭税后月收入的 43% 时，会标成高风险。"
+        }
+      },
       {
         "@type": "Question",
         "name": "房贷提前还款，缩短年限和减少月供哪个更划算？",
@@ -103,9 +136,9 @@
   <main class="mx-auto w-full max-w-xl max-w-[1200px] px-4 py-6 sm:py-10 lg:max-w-[1200px] lg:px-8">
     <header class="mb-5 flex items-center justify-between gap-3">
       <div>
-        <h1 id="page-title" class="text-2xl font-semibold tracking-tight lg:text-3xl">房贷提前还款策略</h1>
-        <h2 class="page-seo-subtitle">免费在线房贷计算器，支持商贷/公积金组合贷、提前还款及转贷对比。</h2>
-        <p id="page-subtitle" class="mt-1 text-sm text-slate-500">对比提前还款、转贷与机会成本</p>
+        <h1 id="page-title" class="text-2xl font-semibold tracking-tight lg:text-3xl">房贷提前还款计算器</h1>
+        <h2 class="page-seo-subtitle">支持多笔提前还、理财机会成本对比、断供风险评估</h2>
+        <p id="page-subtitle" class="page-lead">一次或分多笔提前还都可以算。缩短年限和减少月供放在一起比利息；同一笔钱如果拿去理财，也会算出少省下的利息。另外可以按月供、存款和年龄，看失业后还能撑几个月。</p>
       </div>
       <span id="method-badge" class="rounded-full bg-slate-900 px-3 py-1.5 text-xs font-medium text-white">等额本息</span>
     </header>
@@ -589,12 +622,32 @@
       </div>
     </dialog>
   </main>
+  <section class="blog-entry" aria-labelledby="blog-entry-title">
+    <h2 id="blog-entry-title">房贷知识库</h2>
+    <a href="blog/shrink-years-vs-lower-payment.html">等额本息提前还款，缩短年限还是减少月供更省利息？</a>
+  </section>
   <section class="faq-section" aria-labelledby="faq-title">
     <div class="faq-head">
       <h2 id="faq-title">房贷计算与购房常见问题</h2>
       <button type="button" id="faq-toggle-all" class="faq-toggle-all" aria-expanded="false">[+] 展开全部</button>
     </div>
     <div class="faq-list">
+      <details class="faq-item" open>
+        <summary><h3>这个工具和普通房贷计算器有什么不同？</h3></summary>
+        <p>普通房贷计算器只算月供。这里专门算提前还款：可以一次还，也可以分多笔还；缩短年限和减少月供的利息差额能直接对比；同一笔钱拿去理财时，会算出机会成本；还可以按月供、存款和年龄，评估失业后的断供风险。</p>
+      </details>
+      <details class="faq-item" open>
+        <summary><h3>可以分多笔提前还款吗？</h3></summary>
+        <p>可以。在「分批还款」里按期添加每一笔金额，也可以设置每年固定还一笔。计算器会按实际还款顺序重算剩余本金、月供和总利息。组合贷默认先还利率更高的商贷。</p>
+      </details>
+      <details class="faq-item" open>
+        <summary><h3>提前还款和拿去理财，怎么比机会成本？</h3></summary>
+        <p>在「机会成本对比」里填写手头闲钱，以及这笔钱如果存着或理财能拿到的年化收益率。计算器会比较：用这笔钱缩短年限、用它减少月供，以及按月复利存到原贷款结束，看提前还是不是更划算。</p>
+      </details>
+      <details class="faq-item" open>
+        <summary><h3>怎么评估房贷断供风险？</h3></summary>
+        <p>打开「还款能力风险评估」，填写当前月供、家庭存款和年龄。结果会给出零收入时还能支撑几个月，并反推建议的安全月供上限。月供超过家庭税后月收入的 43% 时，会标成高风险。</p>
+      </details>
       <details class="faq-item">
         <summary><h3>房贷提前还款，缩短年限和减少月供哪个更划算？</h3></summary>
         <p>通常来说，选择「缩短年限」能节省更多的总利息，因为本金减少得更快；而「减少月供」虽然省下的利息少一些，但能立刻减轻每月的现金流压力。建议使用本站的计算器输入您的真实数据，一键对比两种策略的利息差额。</p>

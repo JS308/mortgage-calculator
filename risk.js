@@ -400,10 +400,10 @@ function showPageTab(name) {
   document.getElementById("panel-risk").hidden = calc;
   setTabButton(document.getElementById("tab-calc"), calc);
   setTabButton(document.getElementById("tab-risk"), !calc);
-  document.getElementById("page-title").textContent = calc ? "房贷提前还款策略" : "还款能力风险评估";
+  document.getElementById("page-title").textContent = calc ? "房贷提前还款计算器" : "断供风险评估";
   document.getElementById("page-subtitle").textContent = calc
-    ? "对比提前还款、转贷与机会成本"
-    : "按债务收入比、流动性覆盖和利率压力测试评估还款能力";
+    ? "一次或分多笔提前还都可以算。缩短年限和减少月供放在一起比利息；同一笔钱如果拿去理财，也会算出少省下的利息。另外可以按月供、存款和年龄，看失业后还能撑几个月。"
+    : "填写月供、存款和年龄，看零收入时还能撑几个月，并反推建议的安全月供。";
   document.getElementById("method-badge").hidden = !calc;
   if (!calc) syncRiskPaymentFromReport();
 }

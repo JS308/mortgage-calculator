@@ -1159,8 +1159,147 @@ input.field-missing {
   color: #64748b;
 }
 
+.page-lead {
+  margin-top: 0.5rem;
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  color: #334155;
+}
+
+form input,
+form select,
+form button {
+  touch-action: manipulation;
+}
+
+form input,
+form select {
+  min-height: 48px;
+  font-size: 16px;
+}
+
+form button {
+  min-height: 44px;
+}
+
+.blog-entry {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 36rem;
+  margin: 2rem auto 0;
+  padding: 0 1rem;
+}
+
+.blog-entry h2 {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.blog-entry a {
+  display: inline-block;
+  margin-top: 0.75rem;
+  color: #1d4ed8;
+  font-size: 1rem;
+  line-height: 1.6;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.blog-nav {
+  border-bottom: 1px solid #e2e8f0;
+  background: #fff;
+}
+
+.blog-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 48px;
+  padding: 0 1rem;
+  color: #0f172a;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.blog-wrap {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 0;
+}
+
+.blog-article h1 {
+  font-size: 1.75rem;
+  line-height: 1.35;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  color: #0f172a;
+}
+
+.blog-article h2 {
+  margin: 1.75rem 0 0.75rem;
+  font-size: 1.25rem;
+  line-height: 1.5;
+  font-weight: 650;
+  color: #0f172a;
+}
+
+.blog-article h3 {
+  margin: 1.25rem 0 0.5rem;
+  font-size: 1.05rem;
+  line-height: 1.5;
+  font-weight: 650;
+  color: #0f172a;
+}
+
+.blog-article p {
+  margin: 0.75rem 0 0;
+  font-size: 1rem;
+  line-height: 1.8;
+  color: #334155;
+}
+
+.blog-article a {
+  color: #1d4ed8;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.blog-cta {
+  display: block;
+  margin: 1.5rem 0;
+  padding: 1rem 1.1rem;
+  border-radius: 1rem;
+  background: #0f172a;
+  color: #fff;
+  text-decoration: none;
+}
+
+.blog-cta strong,
+.blog-cta span {
+  display: block;
+}
+
+.blog-cta strong {
+  font-size: 1.125rem;
+  line-height: 1.5;
+}
+
+.blog-cta span {
+  margin-top: 0.35rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #e2e8f0;
+}
+
 @media (min-width: 1024px) {
-  .faq-section {
+  .faq-section,
+  .blog-entry {
     max-width: 1200px;
     padding-left: 2rem;
     padding-right: 2rem;
