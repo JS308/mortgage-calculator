@@ -1,13 +1,3 @@
 User-agent: *
 Allow: /
-
-User-agent: Baiduspider
-Allow: /
-
-User-agent: Baiduspider-image
-Allow: /
-
-User-agent: Baiduspider-mobile
-Allow: /
-
-Sitemap: https://www.tqhuan.cn/sitemap.xml
+Sitemap: https://tqhuan.cn/sitemap.xml
