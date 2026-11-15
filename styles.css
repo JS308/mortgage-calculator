@@ -1076,6 +1076,53 @@ input.field-missing {
   opacity: 0.72;
 }
 
+.page-tab {
+  border-radius: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 600;
+  border-width: 1px;
+  border-style: solid;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.page-tab--calc {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  color: #334155;
+}
+
+.page-tab--calc.is-active {
+  background: #0f172a;
+  border-color: #0f172a;
+  color: #fff;
+}
+
+.page-tab--risk {
+  background: #fff7ed;
+  border-color: #fdba74;
+  color: #9a3412;
+}
+
+.page-tab--risk.is-active {
+  background: #c2410c;
+  border-color: #c2410c;
+  color: #fff;
+}
+
+.page-tab--tax {
+  background: #ecfdf5;
+  border-color: #6ee7b7;
+  color: #065f46;
+}
+
+.page-tab--tax.is-active {
+  background: #0f766e;
+  border-color: #0f766e;
+  color: #fff;
+}
+
 .page-seo-subtitle {
   margin-top: 0.25rem;
   font-size: 0.875rem;

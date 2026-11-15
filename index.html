@@ -145,9 +145,9 @@
     </header>
 
     <div class="mb-5 grid grid-cols-1 gap-2 sm:grid-cols-3" role="tablist">
-      <button type="button" id="tab-calc" class="rounded-xl bg-slate-900 px-3 py-2 text-sm font-semibold text-white" role="tab" aria-selected="true">提前还款策略</button>
-      <button type="button" id="tab-risk" class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800" role="tab" aria-selected="false">还款能力风险评估</button>
-      <button type="button" id="tab-tax" class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800" role="tab" aria-selected="false">买房税费计算</button>
+      <button type="button" id="tab-calc" data-tab-tone="calc" class="page-tab page-tab--calc is-active" role="tab" aria-selected="true">提前还款策略</button>
+      <button type="button" id="tab-risk" data-tab-tone="risk" class="page-tab page-tab--risk" role="tab" aria-selected="false">还款能力风险评估</button>
+      <button type="button" id="tab-tax" data-tab-tone="tax" class="page-tab page-tab--tax" role="tab" aria-selected="false">买房税费计算</button>
     </div>
 
     <div id="panel-calc">
@@ -603,33 +603,25 @@
         <button type="button" id="tax-mode-new" class="rounded-xl bg-slate-900 px-3 py-2 text-sm font-semibold text-white">一手新房</button>
         <button type="button" id="tax-mode-resale" class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800">二手房</button>
       </div>
-      <label class="block text-sm font-medium text-slate-700">
-        房屋总价（万元）
-        <input id="tax-price" name="tax-price" type="text" inputmode="decimal" placeholder="例如 100" autocomplete="off" required class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-base text-slate-900 outline-none ring-slate-900 focus:ring-2">
-      </label>
-      <label class="block text-sm font-medium text-slate-700">
-        房屋面积（平米）
-        <input id="tax-area" name="tax-area" type="text" inputmode="decimal" placeholder="例如 80" autocomplete="off" required class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-base text-slate-900 outline-none ring-slate-900 focus:ring-2">
-      </label>
-      <label class="block text-sm font-medium text-slate-700">
-        是否首套房
-        <select id="tax-home-type" name="tax-home-type" required class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-base text-slate-900 outline-none ring-slate-900 focus:ring-2">
-          <option value="first">首套</option>
-          <option value="second">二套</option>
-        </select>
-      </label>
-      <div>
-        <p class="text-sm font-medium text-slate-700">付款方式</p>
-        <div class="mt-1.5 grid grid-cols-2 gap-2">
-          <button type="button" id="tax-pay-cash" class="rounded-xl bg-slate-900 px-3 py-2 text-sm font-semibold text-white">全款买房</button>
-          <button type="button" id="tax-pay-loan" class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800">贷款买房</button>
-        </div>
-      </div>
-      <label id="tax-down-payment-wrap" hidden class="block text-sm font-medium text-slate-700">
-        首付比例（%）
-        <input id="tax-down-payment" name="tax-down-payment" type="text" inputmode="decimal" value="30" placeholder="例如 30" autocomplete="off" class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-base text-slate-900 outline-none ring-slate-900 focus:ring-2">
-      </label>
       <div id="tax-resale-fields" hidden class="space-y-4">
+        <label class="flex items-start gap-2.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 text-sm font-medium text-slate-800">
+          <input id="tax-seller-mode" name="tax-seller-mode" type="checkbox" class="mt-0.5 h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900">
+          <span>我是卖方，帮我算净得价（到手价）</span>
+        </label>
+        <div id="tax-seller-fields" hidden class="space-y-4">
+          <label class="block text-sm font-medium text-slate-700">
+            我的房子当年买成多少万
+            <input id="tax-buy-price" name="tax-buy-price" type="text" inputmode="decimal" placeholder="例如 80" autocomplete="off" class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-base text-slate-900 outline-none ring-slate-900 focus:ring-2">
+          </label>
+          <label class="block text-sm font-medium text-slate-700">
+            现在卖多少万
+            <input id="tax-sell-price" name="tax-sell-price" type="text" inputmode="decimal" placeholder="例如 120" autocomplete="off" class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-base text-slate-900 outline-none ring-slate-900 focus:ring-2">
+          </label>
+          <label class="block text-sm font-medium text-slate-700">
+            剩余房贷（万元）
+            <input id="tax-remaining-loan" name="tax-remaining-loan" type="text" inputmode="decimal" value="0" placeholder="没有就填 0" autocomplete="off" class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-base text-slate-900 outline-none ring-slate-900 focus:ring-2">
+          </label>
+        </div>
         <label class="block text-sm font-medium text-slate-700">
           房产证是否满 2 年
           <select id="tax-over-two" name="tax-over-two" class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-base text-slate-900 outline-none ring-slate-900 focus:ring-2">
@@ -649,7 +641,35 @@
           <input id="tax-agency-rate" name="tax-agency-rate" type="text" inputmode="decimal" value="2" placeholder="例如 2" autocomplete="off" class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-base text-slate-900 outline-none ring-slate-900 focus:ring-2">
         </label>
       </div>
-      <button type="submit" class="w-full rounded-xl bg-slate-900 px-4 py-3 text-base font-semibold text-white active:bg-slate-800">计算税费</button>
+      <div id="tax-buyer-fields" class="space-y-4">
+        <label class="block text-sm font-medium text-slate-700">
+          房屋总价（万元）
+          <input id="tax-price" name="tax-price" type="text" inputmode="decimal" placeholder="例如 100" autocomplete="off" class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-base text-slate-900 outline-none ring-slate-900 focus:ring-2">
+        </label>
+        <label class="block text-sm font-medium text-slate-700">
+          房屋面积（平米）
+          <input id="tax-area" name="tax-area" type="text" inputmode="decimal" placeholder="例如 80" autocomplete="off" class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-base text-slate-900 outline-none ring-slate-900 focus:ring-2">
+        </label>
+        <label class="block text-sm font-medium text-slate-700">
+          是否首套房
+          <select id="tax-home-type" name="tax-home-type" class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-base text-slate-900 outline-none ring-slate-900 focus:ring-2">
+            <option value="first">首套</option>
+            <option value="second">二套</option>
+          </select>
+        </label>
+        <div>
+          <p class="text-sm font-medium text-slate-700">付款方式</p>
+          <div class="mt-1.5 grid grid-cols-2 gap-2">
+            <button type="button" id="tax-pay-cash" class="rounded-xl bg-slate-900 px-3 py-2 text-sm font-semibold text-white">全款买房</button>
+            <button type="button" id="tax-pay-loan" class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800">贷款买房</button>
+          </div>
+        </div>
+        <label id="tax-down-payment-wrap" hidden class="block text-sm font-medium text-slate-700">
+          首付比例（%）
+          <input id="tax-down-payment" name="tax-down-payment" type="text" inputmode="decimal" value="30" placeholder="例如 30" autocomplete="off" class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-base text-slate-900 outline-none ring-slate-900 focus:ring-2">
+        </label>
+      </div>
+      <button type="submit" id="tax-submit" class="w-full rounded-xl bg-slate-900 px-4 py-3 text-base font-semibold text-white active:bg-slate-800">计算税费</button>
     </form>
     <p id="tax-message" class="empty:hidden mt-3 text-sm text-rose-700" role="alert"></p>
     </div>
@@ -660,14 +680,25 @@
         <p class="mt-2 text-sm leading-relaxed text-slate-500">计算后这里会显示契税、增值税、个税、维修基金、中介费和前期需准备现金。</p>
       </aside>
       <section id="tax-result" hidden class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm lg:p-6">
-        <p class="text-sm text-slate-500">税费及杂费合计</p>
-        <p class="mt-2 text-xl font-semibold leading-snug text-slate-900 sm:text-2xl">
-          除首付外，你还需要准备约
-          <span id="tax-total-wan" class="tabular-nums text-rose-700">—</span>
-          万元 的税费及杂费。
-        </p>
+        <div id="tax-buyer-result">
+          <p class="text-sm text-slate-500">税费及杂费合计</p>
+          <p class="mt-2 text-xl font-semibold leading-snug text-slate-900 sm:text-2xl">
+            除首付外，你还需要准备约
+            <span id="tax-total-wan" class="tabular-nums text-rose-700">—</span>
+            万元 的税费及杂费。
+          </p>
+        </div>
+        <div id="tax-seller-result" hidden>
+          <p class="text-sm text-slate-500">卖房净得价</p>
+          <p class="mt-2 text-xl font-semibold leading-snug text-slate-900 sm:text-2xl">
+            您卖房后，预计能拿回现金
+            <span id="tax-seller-net" class="tabular-nums text-emerald-700">—</span>
+            万元。
+          </p>
+          <p class="mt-2 text-sm leading-relaxed text-slate-500">这笔钱刚好可以作为买新房的启动资金，和「买房税费」测算形成闭环。</p>
+        </div>
         <ul id="tax-detail-list" class="mt-5 space-y-3"></ul>
-        <div class="mt-5 space-y-3 rounded-xl bg-slate-50 p-4">
+        <div id="tax-ledger" class="mt-5 space-y-3 rounded-xl bg-slate-50 p-4">
           <p class="text-sm font-semibold text-slate-800">总账预估</p>
           <div id="tax-cash-all-block">
             <p class="text-sm text-slate-500">全款买入需准备</p>

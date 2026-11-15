@@ -5,12 +5,18 @@
   const taxMessage = document.getElementById("tax-message");
   const taxResult = document.getElementById("tax-result");
   const resaleFields = document.getElementById("tax-resale-fields");
+  const buyerFields = document.getElementById("tax-buyer-fields");
+  const sellerFields = document.getElementById("tax-seller-fields");
+  const sellerModeInput = document.getElementById("tax-seller-mode");
   const modeNewBtn = document.getElementById("tax-mode-new");
   const modeResaleBtn = document.getElementById("tax-mode-resale");
   const payCashBtn = document.getElementById("tax-pay-cash");
   const payLoanBtn = document.getElementById("tax-pay-loan");
   const downPaymentWrap = document.getElementById("tax-down-payment-wrap");
   const detailList = document.getElementById("tax-detail-list");
+  const overTwoSelect = document.getElementById("tax-over-two");
+  const uniqueFiveSelect = document.getElementById("tax-unique-five");
+  const submitBtn = document.getElementById("tax-submit");
 
   let taxMode = "new";
   let payMode = "cash";
@@ -21,13 +27,31 @@
       : "rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800";
   }
 
+  function isSellerMode() {
+    return taxMode === "resale" && sellerModeInput.checked;
+  }
+
+  function syncSellerUi() {
+    const seller = isSellerMode();
+    sellerFields.hidden = !seller;
+    buyerFields.hidden = seller;
+    submitBtn.textContent = seller ? "计算净得价" : "计算税费";
+    taxMessage.textContent = "";
+  }
+
   function setTaxMode(mode) {
     taxMode = mode;
     const isNew = mode === "new";
     setModeButton(modeNewBtn, isNew);
     setModeButton(modeResaleBtn, !isNew);
     resaleFields.hidden = isNew;
-    taxMessage.textContent = "";
+    if (isNew) {
+      sellerModeInput.checked = false;
+    }
+    syncSellerUi();
+    if (!isSellerMode()) {
+      setPayMode(payMode);
+    }
   }
 
   function setPayMode(mode) {
@@ -35,7 +59,7 @@
     const isCash = mode === "cash";
     setModeButton(payCashBtn, isCash);
     setModeButton(payLoanBtn, !isCash);
-    downPaymentWrap.hidden = isCash;
+    downPaymentWrap.hidden = isCash || isSellerMode();
     taxMessage.textContent = "";
   }
 
@@ -62,7 +86,6 @@
     return home + "、" + size + "，按 " + (rate * 100).toFixed(rate === 0.015 ? 1 : 0) + "%";
   }
 
-  // 统一成万元展示：至少两位小数；不足两位补齐，有零头时最多保留四位，保证分项相加等于总计。
   function formatWanAmount(amountYuan) {
     const wan = roundMoney(amountYuan) / 10000;
     let text = wan.toFixed(4).replace(/0+$/, "");
@@ -134,6 +157,7 @@
     const downRatio = input.downPaymentRatio / 100;
     const downPayment = roundMoney(priceYuan * downRatio);
     return {
+      kind: "buyer",
       priceYuan: priceYuan,
       items: items,
       totalFees: totalFees,
@@ -145,7 +169,94 @@
     };
   }
 
-  function renderResult(result) {
+  function calcSellerNet(input) {
+    const saleYuan = roundMoney(input.saleWan * 10000);
+    const buyYuan = roundMoney(input.buyWan * 10000);
+    const remainingLoan = roundMoney(input.remainingLoanWan * 10000);
+
+    const vatRate = input.overTwo ? 0 : 0.053;
+    const vat = roundMoney(saleYuan * vatRate);
+    const incomeRate = input.uniqueFive ? 0 : 0.01;
+    const incomeTax = roundMoney(saleYuan * incomeRate);
+    const agency = roundMoney(saleYuan * (input.agencyRate / 100));
+
+    const items = [
+      {
+        name: "卖出价",
+        amount: saleYuan,
+        note: "现在的成交价",
+        sign: "+",
+      },
+      {
+        name: "当年买入价",
+        amount: buyYuan,
+        note: "仅作对照，不直接扣减到手价",
+        sign: "info",
+      },
+      {
+        name: "剩余房贷",
+        amount: remainingLoan,
+        note: "需先还清或过户时扣减",
+        sign: "-",
+      },
+      {
+        name: "卖方增值税及附加",
+        amount: vat,
+        note: input.overTwo ? "满 2 年免征" : "不满 2 年，按卖出价 5.3%",
+        sign: "-",
+      },
+      {
+        name: "卖方个人所得税",
+        amount: incomeTax,
+        note: input.uniqueFive ? "满五唯一免征" : "非满五唯一，按卖出价 1%",
+        sign: "-",
+      },
+      {
+        name: "中介费",
+        amount: agency,
+        note: "按中介费率 " + input.agencyRate + "%",
+        sign: "-",
+      },
+    ];
+
+    const deductions = roundMoney(remainingLoan + vat + incomeTax + agency);
+    const netCash = roundMoney(saleYuan - deductions);
+    return {
+      kind: "seller",
+      items: items,
+      totalFees: deductions,
+      netCash: netCash,
+      saleYuan: saleYuan,
+      buyYuan: buyYuan,
+    };
+  }
+
+  function renderDetailItems(items) {
+    detailList.innerHTML = items
+      .map(function (item) {
+        const amountText =
+          item.sign === "-"
+            ? "-" + formatWanLabel(item.amount)
+            : item.sign === "+"
+              ? "+" + formatWanLabel(item.amount)
+              : formatWanLabel(item.amount);
+        return (
+          '<li class="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">' +
+          '<div class="flex items-start justify-between gap-3">' +
+          '<div><p class="text-sm font-semibold text-slate-800">' +
+          item.name +
+          '</p><p class="mt-1 text-xs leading-relaxed text-slate-500">' +
+          item.note +
+          "</p></div>" +
+          '<p class="text-base font-semibold tabular-nums text-slate-900">' +
+          amountText +
+          "</p></div></li>"
+        );
+      })
+      .join("");
+  }
+
+  function renderBuyerResult(result) {
     const itemSum = roundMoney(
       result.items.reduce(function (sum, item) {
         return sum + item.amount;
@@ -156,23 +267,20 @@
       return;
     }
 
+    document.getElementById("tax-buyer-result").hidden = false;
+    document.getElementById("tax-seller-result").hidden = true;
+    document.getElementById("tax-ledger").hidden = false;
     document.getElementById("tax-total-wan").textContent = formatWanAmount(result.totalFees);
-    detailList.innerHTML = result.items
-      .map(function (item) {
-        return (
-          '<li class="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">' +
-          '<div class="flex items-start justify-between gap-3">' +
-          '<div><p class="text-sm font-semibold text-slate-800">' +
-          item.name +
-          '</p><p class="mt-1 text-xs leading-relaxed text-slate-500">' +
-          item.note +
-          "</p></div>" +
-          '<p class="text-base font-semibold tabular-nums text-slate-900">' +
-          formatWanLabel(item.amount) +
-          "</p></div></li>"
-        );
+    renderDetailItems(
+      result.items.map(function (item) {
+        return {
+          name: item.name,
+          amount: item.amount,
+          note: item.note,
+          sign: "",
+        };
       })
-      .join("");
+    );
 
     const showCash = result.payMode === "cash";
     document.getElementById("tax-cash-all-block").hidden = !showCash;
@@ -183,6 +291,35 @@
       "首付按总价 " + result.downPaymentRatio + "% + 各项税费";
     taxResult.hidden = false;
   }
+
+  function renderSellerResult(result) {
+    const check = roundMoney(result.saleYuan - result.totalFees);
+    if (check !== result.netCash) {
+      taxMessage.textContent = "计算结果异常：净得价与扣减项不一致";
+      return;
+    }
+
+    document.getElementById("tax-buyer-result").hidden = true;
+    document.getElementById("tax-seller-result").hidden = false;
+    document.getElementById("tax-ledger").hidden = true;
+    document.getElementById("tax-seller-net").textContent = formatWanAmount(result.netCash);
+    renderDetailItems(result.items);
+    taxResult.hidden = false;
+  }
+
+  // 满五唯一必然已满五年，也就必然满 2 年；两项仍独立选择，只做联动。
+  uniqueFiveSelect.addEventListener("change", function () {
+    if (uniqueFiveSelect.value === "yes") {
+      overTwoSelect.value = "yes";
+    }
+  });
+  overTwoSelect.addEventListener("change", function () {
+    if (overTwoSelect.value === "no" && uniqueFiveSelect.value === "yes") {
+      uniqueFiveSelect.value = "no";
+    }
+  });
+
+  sellerModeInput.addEventListener("change", syncSellerUi);
 
   modeNewBtn.addEventListener("click", function () {
     setTaxMode("new");
@@ -201,6 +338,56 @@
     event.preventDefault();
     taxMessage.textContent = "";
 
+    let overTwo = true;
+    let uniqueFive = true;
+    let agencyRate = 2;
+
+    if (taxMode === "resale") {
+      overTwo = overTwoSelect.value === "yes";
+      uniqueFive = uniqueFiveSelect.value === "yes";
+      agencyRate = readNumber("tax-agency-rate");
+      if (agencyRate == null) agencyRate = 2;
+      if (!Number.isFinite(agencyRate) || agencyRate < 0) {
+        taxMessage.textContent = "中介费率需为大于等于 0 的数字";
+        return;
+      }
+    }
+
+    if (isSellerMode()) {
+      const buyWan = readNumber("tax-buy-price");
+      const saleWan = readNumber("tax-sell-price");
+      let remainingLoanWan = readNumber("tax-remaining-loan");
+      if (remainingLoanWan == null) remainingLoanWan = 0;
+      if (buyWan == null || saleWan == null) {
+        taxMessage.textContent = "请填写当年买入价和现在卖出价";
+        return;
+      }
+      if (!Number.isFinite(buyWan) || buyWan < 0) {
+        taxMessage.textContent = "当年买入价需大于等于 0";
+        return;
+      }
+      if (!Number.isFinite(saleWan) || saleWan <= 0) {
+        taxMessage.textContent = "现在卖出价需大于 0";
+        return;
+      }
+      if (!Number.isFinite(remainingLoanWan) || remainingLoanWan < 0) {
+        taxMessage.textContent = "剩余房贷需大于等于 0";
+        return;
+      }
+
+      renderSellerResult(
+        calcSellerNet({
+          buyWan: buyWan,
+          saleWan: saleWan,
+          remainingLoanWan: remainingLoanWan,
+          overTwo: overTwo,
+          uniqueFive: uniqueFive,
+          agencyRate: agencyRate,
+        })
+      );
+      return;
+    }
+
     const priceWan = readNumber("tax-price");
     const area = readNumber("tax-area");
     if (priceWan == null || area == null) {
@@ -217,22 +404,7 @@
     }
 
     const isFirst = document.getElementById("tax-home-type").value === "first";
-    let overTwo = true;
-    let uniqueFive = true;
-    let agencyRate = 2;
     let downPaymentRatio = 30;
-
-    if (taxMode === "resale") {
-      overTwo = document.getElementById("tax-over-two").value === "yes";
-      uniqueFive = document.getElementById("tax-unique-five").value === "yes";
-      agencyRate = readNumber("tax-agency-rate");
-      if (agencyRate == null) agencyRate = 2;
-      if (!Number.isFinite(agencyRate) || agencyRate < 0) {
-        taxMessage.textContent = "中介费率需为大于等于 0 的数字";
-        return;
-      }
-    }
-
     if (payMode === "loan") {
       downPaymentRatio = readNumber("tax-down-payment");
       if (downPaymentRatio == null) downPaymentRatio = 30;
@@ -242,23 +414,25 @@
       }
     }
 
-    const result = calcPurchaseTax({
-      mode: taxMode,
-      payMode: payMode,
-      priceWan: priceWan,
-      area: area,
-      isFirst: isFirst,
-      overTwo: overTwo,
-      uniqueFive: uniqueFive,
-      agencyRate: agencyRate,
-      downPaymentRatio: downPaymentRatio,
-    });
-    renderResult(result);
+    renderBuyerResult(
+      calcPurchaseTax({
+        mode: taxMode,
+        payMode: payMode,
+        priceWan: priceWan,
+        area: area,
+        isFirst: isFirst,
+        overTwo: overTwo,
+        uniqueFive: uniqueFive,
+        agencyRate: agencyRate,
+        downPaymentRatio: downPaymentRatio,
+      })
+    );
   });
 
   setTaxMode("new");
   setPayMode("cash");
 
   window.calcPurchaseTax = calcPurchaseTax;
+  window.calcSellerNet = calcSellerNet;
   window.formatWanAmount = formatWanAmount;
 })();

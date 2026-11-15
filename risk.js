@@ -388,9 +388,8 @@ document.getElementById("risk-use-calc").addEventListener("click", () => {
 });
 
 function setTabButton(button, active) {
-  button.className = active
-    ? "rounded-xl bg-slate-900 px-3 py-2 text-sm font-semibold text-white"
-    : "rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800";
+  const tone = button.dataset.tabTone || "calc";
+  button.className = "page-tab page-tab--" + tone + (active ? " is-active" : "");
   button.setAttribute("aria-selected", active ? "true" : "false");
 }
 
