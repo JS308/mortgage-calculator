@@ -945,19 +945,33 @@ input.field-missing {
     display: flex;
     min-height: 22rem;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 3rem 2.5rem;
+    align-items: stretch;
+    justify-content: flex-start;
+    padding: 1.75rem 1.75rem 1.5rem;
     text-align: center;
     border: 1px solid #e2e8f0;
     border-radius: 1rem;
     background: #fff;
     color: #64748b;
   }
-  .result-placeholder svg {
-    width: 3rem;
-    height: 3rem;
-    margin-bottom: 1rem;
+  .result-example {
+    margin: 1.25rem 0 0;
+    text-align: left;
+  }
+  .result-example img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 0.75rem;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+  }
+  .result-example figcaption {
+    margin-top: 0.6rem;
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    color: #94a3b8;
+    text-align: center;
   }
   .desk-result:has(#result:not([hidden])) .result-placeholder { display: none; }
   .page-foot {
