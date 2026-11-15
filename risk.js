@@ -396,19 +396,30 @@ function setTabButton(button, active) {
 
 function showPageTab(name) {
   const calc = name === "calc";
+  const risk = name === "risk";
+  const tax = name === "tax";
   document.getElementById("panel-calc").hidden = !calc;
-  document.getElementById("panel-risk").hidden = calc;
+  document.getElementById("panel-risk").hidden = !risk;
+  document.getElementById("panel-tax").hidden = !tax;
   setTabButton(document.getElementById("tab-calc"), calc);
-  setTabButton(document.getElementById("tab-risk"), !calc);
-  document.getElementById("page-title").textContent = calc ? "房贷提前还款计算器" : "断供风险评估";
+  setTabButton(document.getElementById("tab-risk"), risk);
+  setTabButton(document.getElementById("tab-tax"), tax);
+  document.getElementById("page-title").textContent = calc
+    ? "房贷提前还款计算器"
+    : risk
+      ? "断供风险评估"
+      : "买房税费计算";
   document.getElementById("page-subtitle").textContent = calc
     ? "一次或分多笔提前还都可以算。缩短年限和减少月供放在一起比利息；同一笔钱如果拿去理财，也会算出少省下的利息。另外可以按月供、存款和年龄，看失业后还能撑几个月。"
-    : "填写月供、存款和年龄，看零收入时还能撑几个月，并反推建议的安全月供。";
+    : risk
+      ? "填写月供、存款和年龄，看零收入时还能撑几个月，并反推建议的安全月供。"
+      : "估算一手新房和二手房的契税、增值税、个税、维修基金和中介费，并算出前期需准备的现金。";
   document.getElementById("method-badge").hidden = !calc;
-  if (!calc) syncRiskPaymentFromReport();
+  if (risk) syncRiskPaymentFromReport();
 }
 
 document.getElementById("tab-calc").addEventListener("click", () => showPageTab("calc"));
 document.getElementById("tab-risk").addEventListener("click", () => showPageTab("risk"));
+document.getElementById("tab-tax").addEventListener("click", () => showPageTab("tax"));
 
 fillRiskAges();

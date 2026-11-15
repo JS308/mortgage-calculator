@@ -94,7 +94,7 @@
         "name": "买房除了首付，还要交哪些隐形费用？",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "买房时除了首付，通常还需要准备：契税（1%-3%）、房屋维修基金、印花税、中介费（二手房）、以及交房后的装修预算和家具家电等。建议使用本站的「购房成本计算」模块，预估一次性需要准备的总现金，避免预算超支。"
+          "text": "买房时除了首付，通常还需要准备：契税（1%-3%）、房屋维修基金、印花税、中介费（二手房）、以及交房后的装修预算和家具家电等。建议使用本站的「买房税费计算」模块，预估一次性需要准备的总现金，避免预算超支。"
         }
       },
       {
@@ -144,9 +144,10 @@
       <span id="method-badge" class="rounded-full bg-slate-900 px-3 py-1.5 text-xs font-medium text-white">等额本息</span>
     </header>
 
-    <div class="mb-5 grid grid-cols-2 gap-2" role="tablist">
+    <div class="mb-5 grid grid-cols-1 gap-2 sm:grid-cols-3" role="tablist">
       <button type="button" id="tab-calc" class="rounded-xl bg-slate-900 px-3 py-2 text-sm font-semibold text-white" role="tab" aria-selected="true">提前还款策略</button>
       <button type="button" id="tab-risk" class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800" role="tab" aria-selected="false">还款能力风险评估</button>
+      <button type="button" id="tab-tax" class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800" role="tab" aria-selected="false">买房税费计算</button>
     </div>
 
     <div id="panel-calc">
@@ -590,6 +591,92 @@
     </div>
     </div>
 
+    <div id="panel-tax" hidden>
+    <div class="lg:grid lg:grid-cols-12 lg:items-start lg:gap-8">
+    <div class="lg:col-span-5 lg:sticky lg:top-6 lg:h-fit lg:self-start">
+    <form id="tax-form" novalidate class="space-y-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm lg:space-y-6">
+      <div>
+        <h2 class="text-base font-semibold">购房类型</h2>
+        <p class="mt-1 text-sm leading-relaxed text-slate-500">按国内通用标准预估一手新房和二手房的税费及杂费，结果仅供参考。</p>
+      </div>
+      <div class="grid grid-cols-2 gap-2">
+        <button type="button" id="tax-mode-new" class="rounded-xl bg-slate-900 px-3 py-2 text-sm font-semibold text-white">一手新房</button>
+        <button type="button" id="tax-mode-resale" class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800">二手房</button>
+      </div>
+      <label class="block text-sm font-medium text-slate-700">
+        房屋总价（万元）
+        <input id="tax-price" name="tax-price" type="text" inputmode="decimal" placeholder="例如 100" autocomplete="off" required class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-base text-slate-900 outline-none ring-slate-900 focus:ring-2">
+      </label>
+      <label class="block text-sm font-medium text-slate-700">
+        房屋面积（平米）
+        <input id="tax-area" name="tax-area" type="text" inputmode="decimal" placeholder="例如 80" autocomplete="off" required class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-base text-slate-900 outline-none ring-slate-900 focus:ring-2">
+      </label>
+      <label class="block text-sm font-medium text-slate-700">
+        是否首套房
+        <select id="tax-home-type" name="tax-home-type" required class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-base text-slate-900 outline-none ring-slate-900 focus:ring-2">
+          <option value="first">首套</option>
+          <option value="second">二套</option>
+        </select>
+      </label>
+      <div id="tax-resale-fields" hidden class="space-y-4">
+        <label class="block text-sm font-medium text-slate-700">
+          房产证是否满 2 年
+          <select id="tax-over-two" name="tax-over-two" class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-base text-slate-900 outline-none ring-slate-900 focus:ring-2">
+            <option value="yes">是</option>
+            <option value="no">否</option>
+          </select>
+        </label>
+        <label class="block text-sm font-medium text-slate-700">
+          是否满五唯一
+          <select id="tax-unique-five" name="tax-unique-five" class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-base text-slate-900 outline-none ring-slate-900 focus:ring-2">
+            <option value="yes">是</option>
+            <option value="no">否</option>
+          </select>
+        </label>
+        <label class="block text-sm font-medium text-slate-700">
+          中介费率（%）
+          <input id="tax-agency-rate" name="tax-agency-rate" type="text" inputmode="decimal" value="2" placeholder="例如 2" autocomplete="off" class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-base text-slate-900 outline-none ring-slate-900 focus:ring-2">
+        </label>
+      </div>
+      <button type="submit" class="w-full rounded-xl bg-slate-900 px-4 py-3 text-base font-semibold text-white active:bg-slate-800">计算税费</button>
+    </form>
+    <p id="tax-message" class="empty:hidden mt-3 text-sm text-rose-700" role="alert"></p>
+    </div>
+
+    <div class="tax-desk lg:col-span-7 lg:overflow-hidden">
+      <aside class="tax-placeholder">
+        <p class="text-base font-semibold text-slate-800">填写左侧信息，估算买房税费及杂费</p>
+        <p class="mt-2 text-sm leading-relaxed text-slate-500">计算后这里会显示契税、增值税、个税、维修基金、中介费和前期需准备现金。</p>
+      </aside>
+      <section id="tax-result" hidden class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm lg:p-6">
+        <p class="text-sm text-slate-500">税费及杂费合计</p>
+        <p class="mt-2 text-xl font-semibold leading-snug text-slate-900 sm:text-2xl">
+          除首付外，你还需要准备约
+          <span id="tax-total-wan" class="tabular-nums text-rose-700">—</span>
+          万元 的税费及杂费。
+        </p>
+        <ul id="tax-detail-list" class="mt-5 space-y-3"></ul>
+        <div class="mt-5 space-y-3 rounded-xl bg-slate-50 p-4">
+          <p class="text-sm font-semibold text-slate-800">总账预估</p>
+          <div class="grid gap-3 sm:grid-cols-2">
+            <div>
+              <p class="text-sm text-slate-500">全款买入需准备</p>
+              <p id="tax-cash-all" class="mt-1 text-lg font-semibold tabular-nums text-slate-900">—</p>
+              <p class="mt-1 text-xs leading-relaxed text-slate-500">总房款 + 各项税费</p>
+            </div>
+            <div>
+              <p class="text-sm text-slate-500">贷款买入前期需准备</p>
+              <p id="tax-cash-loan" class="mt-1 text-lg font-semibold tabular-nums text-slate-900">—</p>
+              <p class="mt-1 text-xs leading-relaxed text-slate-500">首付按总价 30% + 各项税费</p>
+            </div>
+          </div>
+        </div>
+        <p class="tax-disclaimer mt-5">⚠️ 本测算基于国家通用政策预估，各城市（尤其是北上广深及非普通住宅）契税和增值税免征条件可能有差异。具体金额请以当地房管局和税务局实际核算为准。</p>
+      </section>
+    </div>
+    </div>
+    </div>
+
     <dialog id="paid-helper">
       <div class="space-y-4">
         <div class="flex items-center justify-between gap-3">
@@ -663,7 +750,7 @@
       </details>
       <details class="faq-item">
         <summary><h3>买房除了首付，还要交哪些隐形费用？</h3></summary>
-        <p>买房时除了首付，通常还需要准备：契税（1%-3%）、房屋维修基金、印花税、中介费（二手房）、以及交房后的装修预算和家具家电等。建议使用本站的「购房成本计算」模块，预估一次性需要准备的总现金，避免预算超支。</p>
+        <p>买房时除了首付，通常还需要准备：契税（1%-3%）、房屋维修基金、印花税、中介费（二手房）、以及交房后的装修预算和家具家电等。建议使用本站的「买房税费计算」模块，预估一次性需要准备的总现金，避免预算超支。</p>
       </details>
       <details class="faq-item">
         <summary><h3>月供占家庭月收入多少比较合适？（DTI 债务收入比）</h3></summary>
@@ -725,5 +812,6 @@
   <script src="mortgage.js"></script>
   <script src="app.js"></script>
   <script src="risk.js"></script>
+  <script src="tax.js"></script>
 </body>
 </html>
