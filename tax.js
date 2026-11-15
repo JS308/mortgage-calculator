@@ -7,9 +7,13 @@
   const resaleFields = document.getElementById("tax-resale-fields");
   const modeNewBtn = document.getElementById("tax-mode-new");
   const modeResaleBtn = document.getElementById("tax-mode-resale");
+  const payCashBtn = document.getElementById("tax-pay-cash");
+  const payLoanBtn = document.getElementById("tax-pay-loan");
+  const downPaymentWrap = document.getElementById("tax-down-payment-wrap");
   const detailList = document.getElementById("tax-detail-list");
 
   let taxMode = "new";
+  let payMode = "cash";
 
   function setModeButton(button, active) {
     button.className = active
@@ -23,6 +27,15 @@
     setModeButton(modeNewBtn, isNew);
     setModeButton(modeResaleBtn, !isNew);
     resaleFields.hidden = isNew;
+    taxMessage.textContent = "";
+  }
+
+  function setPayMode(mode) {
+    payMode = mode;
+    const isCash = mode === "cash";
+    setModeButton(payCashBtn, isCash);
+    setModeButton(payLoanBtn, !isCash);
+    downPaymentWrap.hidden = isCash;
     taxMessage.textContent = "";
   }
 
@@ -49,24 +62,21 @@
     return home + "、" + size + "，按 " + (rate * 100).toFixed(rate === 0.015 ? 1 : 0) + "%";
   }
 
-  function formatYuan(amount) {
-    const rounded = roundMoney(amount);
-    const text = Number.isInteger(rounded)
-      ? rounded.toLocaleString("zh-CN")
-      : rounded.toLocaleString("zh-CN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    return text + " 元";
-  }
-
-  function formatWan(amountYuan) {
+  // 统一成万元展示：至少两位小数；不足两位补齐，有零头时最多保留四位，保证分项相加等于总计。
+  function formatWanAmount(amountYuan) {
     const wan = roundMoney(amountYuan) / 10000;
-    const text = Number.isInteger(wan)
-      ? String(wan)
-      : wan.toLocaleString("zh-CN", { maximumFractionDigits: 4 });
+    let text = wan.toFixed(4).replace(/0+$/, "");
+    if (text.endsWith(".")) text = text.slice(0, -1);
+    if (!text.includes(".")) {
+      text += ".00";
+    } else if (text.split(".")[1].length === 1) {
+      text += "0";
+    }
     return text;
   }
 
   function formatWanLabel(amountYuan) {
-    return formatWan(amountYuan) + " 万元";
+    return formatWanAmount(amountYuan) + " 万元";
   }
 
   function calcPurchaseTax(input) {
@@ -118,8 +128,11 @@
       });
     }
 
-    const totalFees = roundMoney(items.reduce((sum, item) => sum + item.amount, 0));
-    const downPayment = roundMoney(priceYuan * 0.3);
+    const totalFees = roundMoney(items.reduce(function (sum, item) {
+      return sum + item.amount;
+    }, 0));
+    const downRatio = input.downPaymentRatio / 100;
+    const downPayment = roundMoney(priceYuan * downRatio);
     return {
       priceYuan: priceYuan,
       items: items,
@@ -127,11 +140,23 @@
       cashAll: roundMoney(priceYuan + totalFees),
       cashLoan: roundMoney(downPayment + totalFees),
       downPayment: downPayment,
+      downPaymentRatio: input.downPaymentRatio,
+      payMode: input.payMode,
     };
   }
 
   function renderResult(result) {
-    document.getElementById("tax-total-wan").textContent = formatWan(result.totalFees);
+    const itemSum = roundMoney(
+      result.items.reduce(function (sum, item) {
+        return sum + item.amount;
+      }, 0)
+    );
+    if (itemSum !== result.totalFees) {
+      taxMessage.textContent = "计算结果异常：分项合计与总计不一致";
+      return;
+    }
+
+    document.getElementById("tax-total-wan").textContent = formatWanAmount(result.totalFees);
     detailList.innerHTML = result.items
       .map(function (item) {
         return (
@@ -143,13 +168,19 @@
           item.note +
           "</p></div>" +
           '<p class="text-base font-semibold tabular-nums text-slate-900">' +
-          formatYuan(item.amount) +
+          formatWanLabel(item.amount) +
           "</p></div></li>"
         );
       })
       .join("");
+
+    const showCash = result.payMode === "cash";
+    document.getElementById("tax-cash-all-block").hidden = !showCash;
+    document.getElementById("tax-cash-loan-block").hidden = showCash;
     document.getElementById("tax-cash-all").textContent = formatWanLabel(result.cashAll);
     document.getElementById("tax-cash-loan").textContent = formatWanLabel(result.cashLoan);
+    document.getElementById("tax-cash-loan-note").textContent =
+      "首付按总价 " + result.downPaymentRatio + "% + 各项税费";
     taxResult.hidden = false;
   }
 
@@ -158,6 +189,12 @@
   });
   modeResaleBtn.addEventListener("click", function () {
     setTaxMode("resale");
+  });
+  payCashBtn.addEventListener("click", function () {
+    setPayMode("cash");
+  });
+  payLoanBtn.addEventListener("click", function () {
+    setPayMode("loan");
   });
 
   taxForm.addEventListener("submit", function (event) {
@@ -183,6 +220,7 @@
     let overTwo = true;
     let uniqueFive = true;
     let agencyRate = 2;
+    let downPaymentRatio = 30;
 
     if (taxMode === "resale") {
       overTwo = document.getElementById("tax-over-two").value === "yes";
@@ -195,19 +233,32 @@
       }
     }
 
+    if (payMode === "loan") {
+      downPaymentRatio = readNumber("tax-down-payment");
+      if (downPaymentRatio == null) downPaymentRatio = 30;
+      if (!Number.isFinite(downPaymentRatio) || downPaymentRatio <= 0 || downPaymentRatio > 100) {
+        taxMessage.textContent = "首付比例需在 0 到 100 之间";
+        return;
+      }
+    }
+
     const result = calcPurchaseTax({
       mode: taxMode,
+      payMode: payMode,
       priceWan: priceWan,
       area: area,
       isFirst: isFirst,
       overTwo: overTwo,
       uniqueFive: uniqueFive,
       agencyRate: agencyRate,
+      downPaymentRatio: downPaymentRatio,
     });
     renderResult(result);
   });
 
   setTaxMode("new");
+  setPayMode("cash");
 
   window.calcPurchaseTax = calcPurchaseTax;
+  window.formatWanAmount = formatWanAmount;
 })();

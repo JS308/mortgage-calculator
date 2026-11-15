@@ -409,11 +409,21 @@ function showPageTab(name) {
     : risk
       ? "断供风险评估"
       : "买房税费计算";
-  document.getElementById("page-subtitle").textContent = calc
-    ? "一次或分多笔提前还都可以算。缩短年限和减少月供放在一起比利息；同一笔钱如果拿去理财，也会算出少省下的利息。另外可以按月供、存款和年龄，看失业后还能撑几个月。"
+  document.getElementById("page-seo-subtitle").textContent = calc
+    ? "支持多笔提前还、理财机会成本对比、断供风险评估"
     : risk
-      ? "填写月供、存款和年龄，看零收入时还能撑几个月，并反推建议的安全月供。"
-      : "估算一手新房和二手房的契税、增值税、个税、维修基金和中介费，并算出前期需准备的现金。";
+      ? "按月供、存款和年龄，评估失业后的断供风险与安全月供"
+      : "一键估算新房和二手房的契税、增值税、个税、维修基金和中介费，帮你算清买房到底要准备多少现金。";
+  const lead = document.getElementById("page-subtitle");
+  if (tax) {
+    lead.hidden = true;
+    lead.textContent = "";
+  } else {
+    lead.hidden = false;
+    lead.textContent = calc
+      ? "一次或分多笔提前还都可以算。缩短年限和减少月供放在一起比利息；同一笔钱如果拿去理财，也会算出少省下的利息。另外可以按月供、存款和年龄，看失业后还能撑几个月。"
+      : "填写月供、存款和年龄，看零收入时还能撑几个月，并反推建议的安全月供。";
+  }
   document.getElementById("method-badge").hidden = !calc;
   if (risk) syncRiskPaymentFromReport();
 }

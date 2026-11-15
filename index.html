@@ -138,7 +138,7 @@
     <header class="mb-5 flex items-center justify-between gap-3">
       <div>
         <h1 id="page-title" class="text-2xl font-semibold tracking-tight lg:text-3xl">房贷提前还款计算器</h1>
-        <h2 class="page-seo-subtitle">支持多笔提前还、理财机会成本对比、断供风险评估</h2>
+        <h2 id="page-seo-subtitle" class="page-seo-subtitle">支持多笔提前还、理财机会成本对比、断供风险评估</h2>
         <p id="page-subtitle" class="page-lead">一次或分多笔提前还都可以算。缩短年限和减少月供放在一起比利息；同一笔钱如果拿去理财，也会算出少省下的利息。另外可以按月供、存款和年龄，看失业后还能撑几个月。</p>
       </div>
       <span id="method-badge" class="rounded-full bg-slate-900 px-3 py-1.5 text-xs font-medium text-white">等额本息</span>
@@ -618,6 +618,17 @@
           <option value="second">二套</option>
         </select>
       </label>
+      <div>
+        <p class="text-sm font-medium text-slate-700">付款方式</p>
+        <div class="mt-1.5 grid grid-cols-2 gap-2">
+          <button type="button" id="tax-pay-cash" class="rounded-xl bg-slate-900 px-3 py-2 text-sm font-semibold text-white">全款买房</button>
+          <button type="button" id="tax-pay-loan" class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800">贷款买房</button>
+        </div>
+      </div>
+      <label id="tax-down-payment-wrap" hidden class="block text-sm font-medium text-slate-700">
+        首付比例（%）
+        <input id="tax-down-payment" name="tax-down-payment" type="text" inputmode="decimal" value="30" placeholder="例如 30" autocomplete="off" class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-base text-slate-900 outline-none ring-slate-900 focus:ring-2">
+      </label>
       <div id="tax-resale-fields" hidden class="space-y-4">
         <label class="block text-sm font-medium text-slate-700">
           房产证是否满 2 年
@@ -658,17 +669,15 @@
         <ul id="tax-detail-list" class="mt-5 space-y-3"></ul>
         <div class="mt-5 space-y-3 rounded-xl bg-slate-50 p-4">
           <p class="text-sm font-semibold text-slate-800">总账预估</p>
-          <div class="grid gap-3 sm:grid-cols-2">
-            <div>
-              <p class="text-sm text-slate-500">全款买入需准备</p>
-              <p id="tax-cash-all" class="mt-1 text-lg font-semibold tabular-nums text-slate-900">—</p>
-              <p class="mt-1 text-xs leading-relaxed text-slate-500">总房款 + 各项税费</p>
-            </div>
-            <div>
-              <p class="text-sm text-slate-500">贷款买入前期需准备</p>
-              <p id="tax-cash-loan" class="mt-1 text-lg font-semibold tabular-nums text-slate-900">—</p>
-              <p class="mt-1 text-xs leading-relaxed text-slate-500">首付按总价 30% + 各项税费</p>
-            </div>
+          <div id="tax-cash-all-block">
+            <p class="text-sm text-slate-500">全款买入需准备</p>
+            <p id="tax-cash-all" class="mt-1 text-lg font-semibold tabular-nums text-slate-900">—</p>
+            <p class="mt-1 text-xs leading-relaxed text-slate-500">总房款 + 各项税费</p>
+          </div>
+          <div id="tax-cash-loan-block" hidden>
+            <p class="text-sm text-slate-500">贷款买入前期需准备</p>
+            <p id="tax-cash-loan" class="mt-1 text-lg font-semibold tabular-nums text-slate-900">—</p>
+            <p id="tax-cash-loan-note" class="mt-1 text-xs leading-relaxed text-slate-500">首付 + 各项税费</p>
           </div>
         </div>
         <p class="tax-disclaimer mt-5">⚠️ 本测算基于国家通用政策预估，各城市（尤其是北上广深及非普通住宅）契税和增值税免征条件可能有差异。具体金额请以当地房管局和税务局实际核算为准。</p>
